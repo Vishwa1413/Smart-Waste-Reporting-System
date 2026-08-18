@@ -111,22 +111,31 @@ const UserDashboard = () => {
     }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append('description', description);
-    if (image) {
-      formData.append('image', image);
-    }
-    const lat = position ? position.lat : 11.6643;
-    const lng = position ? position.lng : 78.1460;
-    formData.append('lat', lat);
-    formData.append('lng', lng);
-    formData.append('address', 'Selected Location');
 
     try {
+      let base64Image = '';
+      if (image) {
+        base64Image = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result || '');
+          reader.readAsDataURL(image);
+        });
+      }
+
+      const lat = position ? position.lat : 11.6643;
+      const lng = position ? position.lng : 78.1460;
       const baseUrl = getApiUrl();
-      await axios.post(`${baseUrl}/api/complaints`, formData, {
+
+      const response = await axios.post(`${baseUrl}/api/complaints`, {
+        description,
+        image: base64Image,
+        lat,
+        lng,
+        address: 'Selected Location'
+      }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       toast.success('✓ Waste report submitted successfully!');
       setDescription('');
       setImage(null);
