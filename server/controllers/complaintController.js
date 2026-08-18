@@ -1,52 +1,28 @@
-const fs = require('fs');
-const path = require('path');
 const Complaint = require('../models/Complaint');
 const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
     const body = req.body || {};
-    let rawImage = body.image || body.imageUrl || body.photo || '';
-
-    let finalImageUrl = rawImage;
-
-    // Convert Base64 Data URL string to static image asset on server
-    if (rawImage && typeof rawImage === 'string' && rawImage.startsWith('data:image')) {
-      try {
-        const uploadDir = path.join(__dirname, '..', 'uploads');
-        if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        const parts = rawImage.split(';base64,');
-        if (parts.length === 2) {
-          const mimePart = parts[0];
-          const base64Data = parts[1];
-          const ext = (mimePart.split('/')[1] || 'jpg').replace('+xml', '');
-          const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
-          const filePath = path.join(uploadDir, filename);
-          fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-          finalImageUrl = `/uploads/${filename}`;
-        }
-      } catch (imgErr) {
-        console.error('File write notice:', imgErr.message);
-        finalImageUrl = rawImage;
-      }
-    }
+    const imageUrl = body.image || body.imageUrl || body.photo || '';
 
     const complaint = await Complaint.create({
       userId: req.user.id,
       description: body.description || 'Waste Report',
-      imageUrl: finalImageUrl || '',
+      imageUrl: imageUrl,
       lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
       lng: isNaN(parseFloat(body.lng)) ? 0.0 : parseFloat(body.lng),
       address: body.address || 'Selected Location'
     });
 
-    const responseObj = complaint.toJSON();
-    responseObj.debugKeys = Object.keys(body);
-    responseObj.debugRawImgLen = (rawImage || '').length;
+    const io = req.app.get('io');
+    if (io) {
+      try {
+        io.emit('newComplaint', complaint);
+      } catch (socketErr) {}
+    }
 
-    return res.status(201).json(responseObj);
+    return res.status(201).json(complaint);
   } catch (error) {
     console.error('CRITICAL createComplaint error:', error);
     return res.status(500).json({ 
