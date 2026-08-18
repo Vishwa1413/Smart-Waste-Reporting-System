@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const getJwtSecret = () => (process.env.JWT_SECRET || 'smart_waste_secret_key_123').trim();
+const JWT_SECRET = process.env.JWT_SECRET || 'smart_waste_reporting_jwt_secret_2026';
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.header('Authorization') || req.headers['authorization'];
@@ -10,11 +10,11 @@ const authMiddleware = (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Token is empty, authorization denied' });
 
   try {
-    const decoded = jwt.verify(token, getJwtSecret());
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token is not valid: ' + error.message });
+    res.status(401).json({ message: 'Token is not valid' });
   }
 };
 
