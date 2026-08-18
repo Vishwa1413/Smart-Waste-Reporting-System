@@ -8,14 +8,14 @@ const createComplaint = async (req, res) => {
 
     const complaint = await Complaint.create({
       userId: req.user.id,
-      description,
+      description: description || 'Waste Report',
       imageUrl,
-      lat: parseFloat(lat),
-      lng: parseFloat(lng),
-      address
+      lat: isNaN(parseFloat(lat)) ? 0.0 : parseFloat(lat),
+      lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
+      address: address || 'Selected Location'
     });
     
-    // Emit for real-time
+    // Emit for real-time socket
     const io = req.app.get('io');
     if (io) {
       io.emit('newComplaint', complaint);
@@ -23,6 +23,7 @@ const createComplaint = async (req, res) => {
 
     res.status(201).json(complaint);
   } catch (error) {
+    console.error('Create complaint error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -44,10 +45,8 @@ const getUserComplaints = async (req, res) => {
 
 const getAllComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.findAll({ 
-      where: {
-        deletedByAdmin: false
-      },
+    const complaints = await Complaint.findAll({
+      where: { deletedByAdmin: false },
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
@@ -57,76 +56,9 @@ const getAllComplaints = async (req, res) => {
   }
 };
 
-const updateStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
-    await Complaint.update({ status }, { where: { id: req.params.id } });
-    const complaint = await Complaint.findByPk(req.params.id);
-    
-    // Emit for real-time
-    const io = req.app.get('io');
-    if (io) {
-      io.emit('statusUpdated', complaint);
-    }
-
-    res.json(complaint);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-const deleteComplaint = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const complaint = await Complaint.findByPk(id);
-    if (!complaint) return res.status(404).json({ message: 'Report not found' });
-
-    const io = req.app.get('io');
-
-    // Rule 1: If User deletes a PENDING (uncompleted) report -> Delete on BOTH sides!
-    if (req.user.role !== 'admin' && complaint.status !== 'Completed') {
-      if (String(complaint.userId) !== String(req.user.id)) {
-        return res.status(403).json({ message: 'Unauthorized to delete this report' });
-      }
-
-      await complaint.destroy();
-      if (io) {
-        io.emit('complaintDeletedGlobal', { id: parseInt(id) });
-      }
-      return res.json({ message: 'Pending report cancelled on both sides', id: parseInt(id) });
-    }
-
-    // Rule 2: If status is COMPLETED or ADMIN deletes -> Independent view deletion
-    if (req.user.role === 'admin') {
-      complaint.deletedByAdmin = true;
-      if (io) {
-        io.emit('complaintDeletedAdmin', { id: parseInt(id) });
-      }
-    } else {
-      if (String(complaint.userId) !== String(req.user.id)) {
-        return res.status(403).json({ message: 'Unauthorized to delete this report' });
-      }
-      complaint.deletedByUser = true;
-      if (io) {
-        io.emit('complaintDeletedUser', { id: parseInt(id), userId: req.user.id });
-      }
-    }
-
-    if (complaint.deletedByUser && complaint.deletedByAdmin) {
-      await complaint.destroy();
-    } else {
-      await complaint.save();
-    }
-
-    res.json({ message: 'Report deleted from view successfully', id: parseInt(id) });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 const getCompletedHistory = async (req, res) => {
   try {
-    const complaints = await Complaint.findAll({ 
+    const complaints = await Complaint.findAll({
       where: { status: 'Completed' },
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['updatedAt', 'DESC']]
@@ -137,4 +69,57 @@ const getCompletedHistory = async (req, res) => {
   }
 };
 
-module.exports = { createComplaint, getUserComplaints, getAllComplaints, getCompletedHistory, updateStatus, deleteComplaint };
+const updateStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const complaint = await Complaint.findByPk(req.params.id);
+    if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+    complaint.status = status;
+    await complaint.save();
+
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('updateComplaint', complaint);
+    }
+
+    res.json(complaint);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteComplaint = async (req, res) => {
+  try {
+    const complaint = await Complaint.findByPk(req.params.id);
+    if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+    if (req.user.role === 'admin') {
+      complaint.deletedByAdmin = true;
+    } else if (complaint.userId === req.user.id) {
+      complaint.deletedByUser = true;
+    } else {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    await complaint.save();
+
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('deleteComplaint', req.params.id);
+    }
+
+    res.json({ message: 'Complaint soft deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  createComplaint,
+  getUserComplaints,
+  getAllComplaints,
+  getCompletedHistory,
+  updateStatus,
+  deleteComplaint
+};
