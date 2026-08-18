@@ -99,28 +99,30 @@ const UserDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!description.trim()) {
-      toast.error('Please provide a description');
+      toast.error('Please enter a description for the waste report');
       return;
     }
-    if (!image) {
-      toast.error('Please upload an image');
-      return;
-    }
-    if (!position) {
-      toast.error('Please select a location on the map');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Session expired. Please log out and sign in again.');
+      navigate('/login');
       return;
     }
 
     setLoading(true);
     const formData = new FormData();
     formData.append('description', description);
-    formData.append('image', image);
-    formData.append('lat', position.lat);
-    formData.append('lng', position.lng);
+    if (image) {
+      formData.append('image', image);
+    }
+    const lat = position ? position.lat : 11.6643;
+    const lng = position ? position.lng : 78.1460;
+    formData.append('lat', lat);
+    formData.append('lng', lng);
     formData.append('address', 'Selected Location');
 
     try {
-      const token = localStorage.getItem('token');
       const baseUrl = getApiUrl();
       await axios.post(`${baseUrl}/api/complaints`, formData, {
         headers: { Authorization: `Bearer ${token}` }
@@ -132,7 +134,9 @@ const UserDashboard = () => {
       setPosition(null);
       fetchComplaints();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit report');
+      console.error('Submit report error:', error);
+      const errMsg = error.response?.data?.message || 'Failed to submit report. Please re-login.';
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
