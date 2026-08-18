@@ -56,14 +56,16 @@ sequelize.sync()
   .then(async () => {
     console.log('✓ Connected to SQLite and database synced');
     
-    // Auto-seed default Admin Vishwa account on startup if not present
+    // Auto-seed default Admin & User accounts on startup if not present
     try {
       const User = require('./models/User');
       const bcrypt = require('bcryptjs');
+
+      // Admin Account
       const existingAdmin = await User.findOne({ where: { email: 'vishwa124@gmail.com' } });
       if (!existingAdmin) {
         await User.create({
-          name: 'Vishwa',
+          name: 'Vishwa Admin',
           email: 'vishwa124@gmail.com',
           password: 'Vishwa@45',
           role: 'admin'
@@ -72,7 +74,21 @@ sequelize.sync()
       } else {
         const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
         await existingAdmin.update({ password: hashedPassword }, { hooks: false });
-        console.log('✓ Updated Admin account (vishwa124@gmail.com) password hash');
+      }
+
+      // User Account
+      const existingUser = await User.findOne({ where: { email: 'vishwa123@gmail.com' } });
+      if (!existingUser) {
+        await User.create({
+          name: 'Vishwa User',
+          email: 'vishwa123@gmail.com',
+          password: 'Vishwa@45',
+          role: 'user'
+        });
+        console.log('✓ Auto-seeded User account (vishwa123@gmail.com)');
+      } else {
+        const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
+        await existingUser.update({ password: hashedPassword }, { hooks: false });
       }
     } catch (seedErr) {
       console.log('Admin auto-seed notice:', seedErr.message);
