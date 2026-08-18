@@ -1,3 +1,4 @@
+// Server Entrypoint - Smart Waste Reporting Backend System
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
