@@ -17,8 +17,9 @@ const Complaint = sequelize.define('Complaint', {
     }
   },
   imageUrl: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: DataTypes.TEXT,
+    allowNull: true,
+    defaultValue: ''
   },
   description: {
     type: DataTypes.TEXT,
@@ -33,7 +34,9 @@ const Complaint = sequelize.define('Complaint', {
     allowNull: false
   },
   address: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'Selected Location'
   },
   status: {
     type: DataTypes.ENUM('Pending', 'In Progress', 'Completed'),
