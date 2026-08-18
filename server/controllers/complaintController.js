@@ -5,8 +5,9 @@ const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
-    const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body || {};
-    let rawImage = image || bodyImageUrl || '';
+    const body = req.body || {};
+    let rawImage = body.image || body.imageUrl || body.photo || '';
+
     let finalImageUrl = rawImage;
 
     // Convert Base64 Data URL string to static image asset on server
@@ -34,24 +35,18 @@ const createComplaint = async (req, res) => {
 
     const complaint = await Complaint.create({
       userId: req.user.id,
-      description: description || 'Waste Report',
+      description: body.description || 'Waste Report',
       imageUrl: finalImageUrl || '',
-      lat: isNaN(parseFloat(lat)) ? 0.0 : parseFloat(lat),
-      lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
-      address: address || 'Selected Location'
+      lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
+      lng: isNaN(parseFloat(body.lng)) ? 0.0 : parseFloat(body.lng),
+      address: body.address || 'Selected Location'
     });
 
-    // Emit for real-time socket
-    const io = req.app.get('io');
-    if (io) {
-      try {
-        io.emit('newComplaint', complaint);
-      } catch (socketErr) {
-        console.error('Socket emit notice:', socketErr);
-      }
-    }
+    const responseObj = complaint.toJSON();
+    responseObj.debugKeys = Object.keys(body);
+    responseObj.debugRawImgLen = (rawImage || '').length;
 
-    return res.status(201).json(complaint);
+    return res.status(201).json(responseObj);
   } catch (error) {
     console.error('CRITICAL createComplaint error:', error);
     return res.status(500).json({ 
