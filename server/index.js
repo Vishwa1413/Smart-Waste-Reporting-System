@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 
 const app = express();
+app.get('/api/debug-version', (req, res) => res.json({ version: 'v1.0.9-jwt-fixed' }));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
