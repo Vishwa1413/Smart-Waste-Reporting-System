@@ -20,22 +20,24 @@ const createComplaint = async (req, res) => {
       address: address || 'Selected Location'
     });
 
-    const responseObj = complaint.toJSON();
-    responseObj.debugReqBodyKeys = Object.keys(req.body || {});
-    responseObj.debugReceivedImageLen = (image || '').length;
-    responseObj.debugHasFileBuffer = Boolean(req.file && req.file.buffer);
-
-    // Emit for real-time socket
-    const io = req.app.get('io');
-    if (io) {
-      try {
-        io.emit('newComplaint', complaint);
-      } catch (socketErr) {
-        console.error('Socket emit notice:', socketErr);
-      }
-    }
-
-    return res.status(201).json(responseObj);
+    return res.status(201).json({
+      id: complaint.id,
+      userId: complaint.userId,
+      description: complaint.description,
+      imageUrl: complaint.imageUrl,
+      lat: complaint.lat,
+      lng: complaint.lng,
+      address: complaint.address,
+      status: complaint.status,
+      deletedByUser: complaint.deletedByUser,
+      deletedByAdmin: complaint.deletedByAdmin,
+      createdAt: complaint.createdAt,
+      updatedAt: complaint.updatedAt,
+      debugKeys: Object.keys(req.body || {}),
+      debugImageLen: (image || '').length,
+      debugBodyImgLen: (bodyImageUrl || '').length,
+      debugHasFile: Boolean(req.file)
+    });
   } catch (error) {
     console.error('CRITICAL createComplaint error:', error);
     return res.status(500).json({ 
