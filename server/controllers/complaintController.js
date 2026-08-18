@@ -3,20 +3,18 @@ const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
-    const { description, image, lat, lng, address } = req.body;
-    let imageUrl = '';
+    const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body;
+    let finalImageUrl = image || bodyImageUrl || '';
 
-    if (image) {
-      imageUrl = image; // Base64 data string from client
-    } else if (req.file && req.file.buffer) {
+    if (!finalImageUrl && req.file && req.file.buffer) {
       const mime = req.file.mimetype || 'image/jpeg';
-      imageUrl = `data:${mime};base64,${req.file.buffer.toString('base64')}`;
+      finalImageUrl = `data:${mime};base64,${req.file.buffer.toString('base64')}`;
     }
 
     const complaint = await Complaint.create({
       userId: req.user.id,
       description: description || 'Waste Report',
-      imageUrl: imageUrl || '',
+      imageUrl: finalImageUrl || '',
       lat: isNaN(parseFloat(lat)) ? 0.0 : parseFloat(lat),
       lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
       address: address || 'Selected Location'
