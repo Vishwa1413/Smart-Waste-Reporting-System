@@ -11,6 +11,9 @@ const createComplaint = async (req, res) => {
       finalImageUrl = `data:${mime};base64,${req.file.buffer.toString('base64')}`;
     }
 
+    console.log('CRITICAL DEBUG - Received description:', description);
+    console.log('CRITICAL DEBUG - Received image length:', finalImageUrl ? finalImageUrl.length : 0);
+
     const complaint = await Complaint.create({
       userId: req.user.id,
       description: description || 'Waste Report',
@@ -19,7 +22,9 @@ const createComplaint = async (req, res) => {
       lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
       address: address || 'Selected Location'
     });
-    
+
+    console.log('CRITICAL DEBUG - Saved complaint id:', complaint.id, 'saved imageUrl length:', complaint.imageUrl ? complaint.imageUrl.length : 0);
+
     // Emit for real-time socket
     const io = req.app.get('io');
     if (io) {
