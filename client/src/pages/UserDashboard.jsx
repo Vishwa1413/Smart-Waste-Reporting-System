@@ -126,21 +126,25 @@ const UserDashboard = () => {
     const baseUrl = getApiUrl();
 
     try {
-      const formData = new FormData();
-      formData.append('description', description);
-      formData.append('lat', lat);
-      formData.append('lng', lng);
-      formData.append('address', 'Selected Location');
-
-      if (image) {
-        formData.append('image', image);
-      } else if (imagePreview) {
-        formData.append('image', imagePreview);
+      let base64Image = imagePreview || '';
+      if (!base64Image && image) {
+        base64Image = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result || '');
+          reader.readAsDataURL(image);
+        });
       }
 
-      await axios.post(`${baseUrl}/api/complaints`, formData, {
+      await axios.post(`${baseUrl}/api/complaints`, {
+        description,
+        image: base64Image,
+        lat,
+        lng,
+        address: 'Selected Location'
+      }, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 

@@ -5,29 +5,12 @@ const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
-    const body = req.body || {};
-    let rawImage = body.image || body.imageUrl || body.photo || '';
+    const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body || {};
+    let rawImage = image || bodyImageUrl || '';
+    let finalImageUrl = rawImage;
 
-    let finalImageUrl = rawImage || '';
-
-    // 1. Process Multer uploaded image memory buffer
-    if (req.file && req.file.buffer) {
-      try {
-        const uploadDir = path.join(__dirname, '..', 'uploads');
-        if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        const ext = req.file.mimetype ? (req.file.mimetype.split('/')[1] || 'jpg') : 'jpg';
-        const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
-        const filePath = path.join(uploadDir, filename);
-        fs.writeFileSync(filePath, req.file.buffer);
-        finalImageUrl = `/uploads/${filename}`;
-      } catch (e) {
-        console.error('File buffer write notice:', e.message);
-      }
-    }
-    // 2. Process Base64 Data URL string
-    else if (rawImage && typeof rawImage === 'string' && rawImage.startsWith('data:image')) {
+    // Convert Base64 Data URL string to static image asset on server
+    if (rawImage && typeof rawImage === 'string' && rawImage.startsWith('data:image')) {
       try {
         const uploadDir = path.join(__dirname, '..', 'uploads');
         if (!fs.existsSync(uploadDir)) {
@@ -43,19 +26,19 @@ const createComplaint = async (req, res) => {
           fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
           finalImageUrl = `/uploads/${filename}`;
         }
-      } catch (imgParseErr) {
-        console.error('Base64 parse notice:', imgParseErr.message);
+      } catch (imgErr) {
+        console.error('File write notice:', imgErr.message);
         finalImageUrl = rawImage;
       }
     }
 
     const complaint = await Complaint.create({
       userId: req.user.id,
-      description: body.description || 'Waste Report',
+      description: description || 'Waste Report',
       imageUrl: finalImageUrl || '',
-      lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
-      lng: isNaN(parseFloat(body.lng)) ? 0.0 : parseFloat(body.lng),
-      address: body.address || 'Selected Location'
+      lat: isNaN(parseFloat(lat)) ? 0.0 : parseFloat(lat),
+      lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
+      address: address || 'Selected Location'
     });
 
     // Emit for real-time socket
