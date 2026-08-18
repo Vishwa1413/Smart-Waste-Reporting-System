@@ -10,6 +10,15 @@ import { useTheme } from '../context/ThemeContext';
 
 import { getApiUrl } from '../config';
 
+const getImageUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  const baseUrl = getApiUrl();
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 const UserDashboard = () => {
   const [complaints, setComplaints] = useState([]);
   const [description, setDescription] = useState('');
@@ -412,10 +421,10 @@ const UserDashboard = () => {
 
                         {complaint.imageUrl && (
                           <img 
-                            src={complaint.imageUrl.startsWith('http') ? complaint.imageUrl : `${getApiUrl()}${complaint.imageUrl}`} 
+                            src={getImageUrl(complaint.imageUrl)} 
                             className="w-full h-24 object-cover rounded-xl mb-2 group-hover:scale-105 transition-transform duration-300"
                             alt="Waste"
-                            onError={(e) => { e.target.style.display = 'none'; }}
+                            onError={(e) => { console.error('Image load error:', complaint.imageUrl); }}
                           />
                         )}
 

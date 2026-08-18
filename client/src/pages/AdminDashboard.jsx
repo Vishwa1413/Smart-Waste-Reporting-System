@@ -7,6 +7,15 @@ import { io } from 'socket.io-client';
 import { useTheme } from '../context/ThemeContext';
 import { getApiUrl } from '../config';
 
+const getImageUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  const baseUrl = getApiUrl();
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 const AdminDashboard = () => {
   const [complaints, setComplaints] = useState([]);
   const [completedHistory, setCompletedHistory] = useState([]);
@@ -296,10 +305,10 @@ const AdminDashboard = () => {
                   >
                     {complaint.imageUrl ? (
                       <img 
-                        src={complaint.imageUrl.startsWith('http') ? complaint.imageUrl : `${getApiUrl()}${complaint.imageUrl}`} 
+                        src={getImageUrl(complaint.imageUrl)} 
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         alt="Waste Report"
-                        onError={(e) => { e.target.style.display = 'none'; }}
+                        onError={(e) => { console.error('Admin image load error:', complaint.imageUrl); }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-500">
@@ -460,7 +469,7 @@ const AdminDashboard = () => {
               {selectedReport.imageUrl && (
                 <div className="rounded-2xl overflow-hidden bg-slate-900 h-60 border-2 border-slate-800 shadow-inner shrink-0 relative">
                   <img
-                    src={selectedReport.imageUrl.startsWith('http') ? selectedReport.imageUrl : `${getApiUrl()}${selectedReport.imageUrl}`}
+                    src={getImageUrl(selectedReport.imageUrl)}
                     alt="Waste Evidence"
                     className="w-full h-full object-cover"
                   />
