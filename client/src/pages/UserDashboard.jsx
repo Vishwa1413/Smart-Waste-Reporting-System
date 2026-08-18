@@ -120,30 +120,28 @@ const UserDashboard = () => {
     }
 
     setLoading(true);
+    const token = localStorage.getItem('token');
+    const lat = position ? position.lat : 11.6643;
+    const lng = position ? position.lng : 78.1460;
+    const baseUrl = getApiUrl();
 
     try {
-      let base64Image = imagePreview || '';
-      if (!base64Image && image) {
-        base64Image = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result || '');
-          reader.readAsDataURL(image);
-        });
+      const formData = new FormData();
+      formData.append('description', description);
+      formData.append('lat', lat);
+      formData.append('lng', lng);
+      formData.append('address', 'Selected Location');
+
+      if (image) {
+        formData.append('image', image);
+      } else if (imagePreview) {
+        formData.append('image', imagePreview);
       }
 
-      const lat = position ? position.lat : 11.6643;
-      const lng = position ? position.lng : 78.1460;
-      const baseUrl = getApiUrl();
-
-      const response = await axios.post(`${baseUrl}/api/complaints`, {
-        description,
-        image: base64Image,
-        imageUrl: base64Image,
-        lat,
-        lng,
-        address: 'Selected Location'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.post(`${baseUrl}/api/complaints`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       toast.success('✓ Waste report submitted successfully!');

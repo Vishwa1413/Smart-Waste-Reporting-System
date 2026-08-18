@@ -7,27 +7,22 @@ const { createComplaint, getUserComplaints, getAllComplaints, getCompletedHistor
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage,
-  limits: { fileSize: 15 * 1024 * 1024 }
+  limits: { fileSize: 25 * 1024 * 1024 }
 });
 
 const handleImageUpload = (req, res, next) => {
   const contentType = req.headers['content-type'] || '';
   if (contentType.includes('multipart/form-data')) {
-    try {
-      return upload.single('image')(req, res, (err) => {
-        if (err) {
-          console.error('Multer memory upload notice:', err.message);
-          req.file = null;
-        }
-        next();
-      });
-    } catch (syncErr) {
-      console.error('Multer sync exception:', syncErr.message);
-      req.file = null;
-      return next();
-    }
+    upload.single('image')(req, res, (err) => {
+      if (err) {
+        console.error('Multer memory upload error:', err.message);
+        req.file = null;
+      }
+      next();
+    });
+  } else {
+    next();
   }
-  next();
 };
 
 router.post('/', authMiddleware, handleImageUpload, createComplaint);
