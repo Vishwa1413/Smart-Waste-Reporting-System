@@ -154,33 +154,10 @@ const Login = () => {
               <p className="text-xs text-slate-500 text-center mt-1">Sign in to report waste & manage reports</p>
             </div>
 
-            {/* Quick Select & Auto Role Detection Indicator */}
-            <div className="mb-6 space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block text-center flex items-center justify-center gap-1">
-                <span>⚡ Select Account Type to Auto-Fill</span>
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  type="button"
-                  onClick={() => fillQuickLogin('user')}
-                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs transition-colors shadow-sm"
-                >
-                  <User size={14} /> User Account
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  type="button"
-                  onClick={() => fillQuickLogin('admin')}
-                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-purple-300 bg-purple-50/70 hover:bg-purple-100 text-purple-800 font-semibold text-xs transition-colors shadow-sm"
-                >
-                  <Shield size={14} /> Admin Account
-                </motion.button>
-              </div>
-              <p className="text-[10px] text-slate-500 text-center font-medium bg-slate-50 py-1 px-2 rounded-lg border border-slate-200/60">
-                🛡️ Role is auto-detected: Admin emails automatically open Admin Dashboard upon sign in.
+            {/* Manual Sign-in Role Detection Indicator */}
+            <div className="mb-6 p-3 bg-slate-50/80 rounded-2xl border border-slate-200/80 text-center">
+              <p className="text-xs text-slate-600 font-medium">
+                🛡️ Sign in with your registered <span className="font-bold text-emerald-600">User</span> or <span className="font-bold text-purple-600">Admin</span> email & password.
               </p>
             </div>
 
