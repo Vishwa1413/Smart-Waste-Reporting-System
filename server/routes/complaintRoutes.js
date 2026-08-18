@@ -3,6 +3,7 @@ const router = express.Router();
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 const { createComplaint, getUserComplaints, getAllComplaints, getCompletedHistory, updateStatus, deleteComplaint } = require('../controllers/complaintController');
 
+router.get('/version-check', (req, res) => res.json({ version: 'v100-direct-img-persistence' }));
 router.post('/', authMiddleware, createComplaint);
 router.get('/user', authMiddleware, getUserComplaints);
 router.get('/all', authMiddleware, adminMiddleware, getAllComplaints);
