@@ -5,13 +5,15 @@ const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
-    const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body || {};
-    let imageUrl = bodyImageUrl || '';
+    const body = req.body || {};
+    let rawImage = body.image || body.imageUrl || body.photo || '';
 
     const uploadDir = path.join(__dirname, '..', 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
+
+    let finalImageUrl = '';
 
     // 1. Process Multer uploaded image memory buffer
     if (req.file && req.file.buffer) {
@@ -19,32 +21,36 @@ const createComplaint = async (req, res) => {
       const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
       const filePath = path.join(uploadDir, filename);
       fs.writeFileSync(filePath, req.file.buffer);
-      imageUrl = `/uploads/${filename}`;
+      finalImageUrl = `/uploads/${filename}`;
     }
     // 2. Process Base64 Data URL string
-    else if (image && typeof image === 'string' && image.startsWith('data:image')) {
-      const matches = image.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
-      if (matches && matches.length === 3) {
-        const ext = matches[1];
-        const base64Data = matches[2];
-        const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
-        const filePath = path.join(uploadDir, filename);
-        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-        imageUrl = `/uploads/${filename}`;
+    else if (rawImage && typeof rawImage === 'string') {
+      if (rawImage.startsWith('data:image')) {
+        try {
+          const parts = rawImage.split(';base64,');
+          const mimePart = parts[0];
+          const base64Data = parts[1];
+          const ext = mimePart.split('/')[1] || 'jpg';
+          const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
+          const filePath = path.join(uploadDir, filename);
+          fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+          finalImageUrl = `/uploads/${filename}`;
+        } catch (imgParseErr) {
+          console.error('Base64 parse notice:', imgParseErr.message);
+          finalImageUrl = rawImage;
+        }
       } else {
-        imageUrl = image;
+        finalImageUrl = rawImage;
       }
-    } else if (image) {
-      imageUrl = image;
     }
 
     const complaint = await Complaint.create({
       userId: req.user.id,
-      description: description || 'Waste Report',
-      imageUrl: imageUrl || '',
-      lat: isNaN(parseFloat(lat)) ? 0.0 : parseFloat(lat),
-      lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
-      address: address || 'Selected Location'
+      description: body.description || 'Waste Report',
+      imageUrl: finalImageUrl || '',
+      lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
+      lng: isNaN(parseFloat(body.lng)) ? 0.0 : parseFloat(body.lng),
+      address: body.address || 'Selected Location'
     });
 
     // Emit for real-time socket
