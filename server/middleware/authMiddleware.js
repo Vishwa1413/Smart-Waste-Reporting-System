@@ -3,8 +3,11 @@ const jwt = require('jsonwebtoken');
 const getJwtSecret = () => process.env.JWT_SECRET || 'smart_waste_secret_key_123';
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
+  const authHeader = req.header('Authorization');
+  if (!authHeader) return res.status(401).json({ message: 'No token, authorization denied' });
+
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (!token) return res.status(401).json({ message: 'Token is empty, authorization denied' });
 
   try {
     const decoded = jwt.verify(token, getJwtSecret());
