@@ -1,49 +1,68 @@
+const fs = require('fs');
+const path = require('path');
 const Complaint = require('../models/Complaint');
 const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
     const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body || {};
-    let finalImageUrl = image || bodyImageUrl || '';
+    let imageUrl = bodyImageUrl || '';
 
-    if (!finalImageUrl && req.file && req.file.buffer) {
-      const mime = req.file.mimetype || 'image/jpeg';
-      finalImageUrl = `data:${mime};base64,${req.file.buffer.toString('base64')}`;
+    const uploadDir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // 1. Process Multer uploaded image memory buffer
+    if (req.file && req.file.buffer) {
+      const ext = req.file.mimetype ? (req.file.mimetype.split('/')[1] || 'jpg') : 'jpg';
+      const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
+      const filePath = path.join(uploadDir, filename);
+      fs.writeFileSync(filePath, req.file.buffer);
+      imageUrl = `/uploads/${filename}`;
+    }
+    // 2. Process Base64 Data URL string
+    else if (image && typeof image === 'string' && image.startsWith('data:image')) {
+      const matches = image.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const ext = matches[1];
+        const base64Data = matches[2];
+        const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
+        const filePath = path.join(uploadDir, filename);
+        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+        imageUrl = `/uploads/${filename}`;
+      } else {
+        imageUrl = image;
+      }
+    } else if (image) {
+      imageUrl = image;
     }
 
     const complaint = await Complaint.create({
       userId: req.user.id,
       description: description || 'Waste Report',
-      imageUrl: finalImageUrl || '',
+      imageUrl: imageUrl || '',
       lat: isNaN(parseFloat(lat)) ? 0.0 : parseFloat(lat),
       lng: isNaN(parseFloat(lng)) ? 0.0 : parseFloat(lng),
       address: address || 'Selected Location'
     });
 
-    return res.status(201).json({
-      id: complaint.id,
-      userId: complaint.userId,
-      description: complaint.description,
-      imageUrl: complaint.imageUrl,
-      lat: complaint.lat,
-      lng: complaint.lng,
-      address: complaint.address,
-      status: complaint.status,
-      deletedByUser: complaint.deletedByUser,
-      deletedByAdmin: complaint.deletedByAdmin,
-      createdAt: complaint.createdAt,
-      updatedAt: complaint.updatedAt,
-      debugKeys: Object.keys(req.body || {}),
-      debugImageLen: (image || '').length,
-      debugBodyImgLen: (bodyImageUrl || '').length,
-      debugHasFile: Boolean(req.file)
-    });
+    // Emit for real-time socket
+    const io = req.app.get('io');
+    if (io) {
+      try {
+        io.emit('newComplaint', complaint);
+      } catch (socketErr) {
+        console.error('Socket emit notice:', socketErr);
+      }
+    }
+
+    return res.status(201).json(complaint);
   } catch (error) {
     console.error('CRITICAL createComplaint error:', error);
     return res.status(500).json({ 
       error: true, 
-      message: error.message || 'Server error creating complaint',
-      details: error.stack
+      message: error.message || 'Server error creating complaint'
     });
   }
 };
