@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const getJwtSecret = () => process.env.JWT_SECRET || 'smart_waste_secret_key_123';
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.header('Authorization');
+  const authHeader = req.header('Authorization') || req.headers['authorization'];
   if (!authHeader) return res.status(401).json({ message: 'No token, authorization denied' });
 
   const token = authHeader.replace(/^Bearer\s+/i, '').trim();
@@ -14,12 +14,12 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token is not valid' });
+    res.status(401).json({ message: 'Token is not valid: ' + error.message });
   }
 };
 
 const adminMiddleware = (req, res, next) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
+  if (!req.user || req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
   next();
 };
 
