@@ -4,7 +4,11 @@ const User = require('../models/User');
 const createComplaint = async (req, res) => {
   try {
     const { description, lat, lng, address } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+    let imageUrl = '';
+
+    if (req.file && req.file.filename) {
+      imageUrl = `/uploads/${req.file.filename}`;
+    }
 
     const complaint = await Complaint.create({
       userId: req.user.id,
@@ -18,13 +22,17 @@ const createComplaint = async (req, res) => {
     // Emit for real-time socket
     const io = req.app.get('io');
     if (io) {
-      io.emit('newComplaint', complaint);
+      try {
+        io.emit('newComplaint', complaint);
+      } catch (socketErr) {
+        console.error('Socket emit error:', socketErr);
+      }
     }
 
-    res.status(201).json(complaint);
+    return res.status(201).json(complaint);
   } catch (error) {
     console.error('Create complaint error:', error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message || 'Server error creating complaint' });
   }
 };
 
@@ -37,9 +45,9 @@ const getUserComplaints = async (req, res) => {
       },
       order: [['createdAt', 'DESC']]
     });
-    res.json(complaints);
+    return res.json(complaints);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -50,9 +58,9 @@ const getAllComplaints = async (req, res) => {
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
-    res.json(complaints);
+    return res.json(complaints);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -63,9 +71,9 @@ const getCompletedHistory = async (req, res) => {
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['updatedAt', 'DESC']]
     });
-    res.json(complaints);
+    return res.json(complaints);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -80,12 +88,14 @@ const updateStatus = async (req, res) => {
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('updateComplaint', complaint);
+      try {
+        io.emit('updateComplaint', complaint);
+      } catch (socketErr) {}
     }
 
-    res.json(complaint);
+    return res.json(complaint);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -106,12 +116,14 @@ const deleteComplaint = async (req, res) => {
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('deleteComplaint', req.params.id);
+      try {
+        io.emit('deleteComplaint', req.params.id);
+      } catch (socketErr) {}
     }
 
-    res.json({ message: 'Complaint soft deleted successfully' });
+    return res.json({ message: 'Complaint soft deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
