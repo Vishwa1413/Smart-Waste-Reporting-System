@@ -5,6 +5,7 @@ import { MapPin, CheckCircle, Clock, ExternalLink, Filter, Search, User, BarChar
 import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
 import { useTheme } from '../context/ThemeContext';
+import { getApiUrl } from '../config';
 
 const AdminDashboard = () => {
   const [complaints, setComplaints] = useState([]);
@@ -21,8 +22,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchComplaints();
     fetchCompletedHistory();
-    const backendHost = window.location.hostname || 'localhost';
-    const newSocket = io(`http://${backendHost}:5000`);
+    const baseUrl = getApiUrl();
+    const newSocket = io(baseUrl);
 
     newSocket.on('newComplaint', (complaint) => {
       setComplaints(prev => [complaint, ...prev]);
@@ -65,8 +66,8 @@ const AdminDashboard = () => {
   const fetchComplaints = async () => {
     try {
       const token = localStorage.getItem('token');
-      const backendHost = window.location.hostname || 'localhost';
-      const response = await axios.get(`http://${backendHost}:5000/api/complaints/all`, {
+      const baseUrl = getApiUrl();
+      const response = await axios.get(`${baseUrl}/api/complaints/all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setComplaints(response.data);
@@ -78,8 +79,8 @@ const AdminDashboard = () => {
   const fetchCompletedHistory = async () => {
     try {
       const token = localStorage.getItem('token');
-      const backendHost = window.location.hostname || 'localhost';
-      const response = await axios.get(`http://${backendHost}:5000/api/complaints/completed-history`, {
+      const baseUrl = getApiUrl();
+      const response = await axios.get(`${baseUrl}/api/complaints/completed-history`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCompletedHistory(response.data);
@@ -96,8 +97,8 @@ const AdminDashboard = () => {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('token');
-      const backendHost = window.location.hostname || 'localhost';
-      await axios.patch(`http://${backendHost}:5000/api/complaints/${id}/status`, { status }, {
+      const baseUrl = getApiUrl();
+      await axios.patch(`${baseUrl}/api/complaints/${id}/status`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(`✓ Marked as ${status}`);
@@ -119,8 +120,8 @@ const AdminDashboard = () => {
     if (e) e.stopPropagation();
     try {
       const token = localStorage.getItem('token');
-      const backendHost = window.location.hostname || 'localhost';
-      await axios.delete(`http://${backendHost}:5000/api/complaints/${id}`, {
+      const baseUrl = getApiUrl();
+      await axios.delete(`${baseUrl}/api/complaints/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setComplaints(prev => prev.filter(c => c.id !== id));
@@ -295,7 +296,7 @@ const AdminDashboard = () => {
                   >
                     {complaint.imageUrl ? (
                       <img 
-                        src={complaint.imageUrl.startsWith('http') ? complaint.imageUrl : `http://${window.location.hostname || 'localhost'}:5000${complaint.imageUrl}`} 
+                        src={complaint.imageUrl.startsWith('http') ? complaint.imageUrl : `${getApiUrl()}${complaint.imageUrl}`} 
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         alt="Waste Report"
                         onError={(e) => { e.target.style.display = 'none'; }}
@@ -459,7 +460,7 @@ const AdminDashboard = () => {
               {selectedReport.imageUrl && (
                 <div className="rounded-2xl overflow-hidden bg-slate-900 h-60 border-2 border-slate-800 shadow-inner shrink-0 relative">
                   <img
-                    src={selectedReport.imageUrl.startsWith('http') ? selectedReport.imageUrl : `http://${window.location.hostname || 'localhost'}:5000${selectedReport.imageUrl}`}
+                    src={selectedReport.imageUrl.startsWith('http') ? selectedReport.imageUrl : `${getApiUrl()}${selectedReport.imageUrl}`}
                     alt="Waste Evidence"
                     className="w-full h-full object-cover"
                   />
