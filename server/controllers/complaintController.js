@@ -8,38 +8,43 @@ const createComplaint = async (req, res) => {
     const body = req.body || {};
     let rawImage = body.image || body.imageUrl || body.photo || '';
 
-    const uploadDir = path.join(__dirname, '..', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    let finalImageUrl = '';
+    let finalImageUrl = rawImage || '';
 
     // 1. Process Multer uploaded image memory buffer
     if (req.file && req.file.buffer) {
-      const ext = req.file.mimetype ? (req.file.mimetype.split('/')[1] || 'jpg') : 'jpg';
-      const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
-      const filePath = path.join(uploadDir, filename);
-      fs.writeFileSync(filePath, req.file.buffer);
-      finalImageUrl = `/uploads/${filename}`;
+      try {
+        const uploadDir = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const ext = req.file.mimetype ? (req.file.mimetype.split('/')[1] || 'jpg') : 'jpg';
+        const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
+        const filePath = path.join(uploadDir, filename);
+        fs.writeFileSync(filePath, req.file.buffer);
+        finalImageUrl = `/uploads/${filename}`;
+      } catch (e) {
+        console.error('File buffer write notice:', e.message);
+      }
     }
     // 2. Process Base64 Data URL string
-    else if (rawImage && typeof rawImage === 'string') {
-      if (rawImage.startsWith('data:image')) {
-        try {
-          const parts = rawImage.split(';base64,');
+    else if (rawImage && typeof rawImage === 'string' && rawImage.startsWith('data:image')) {
+      try {
+        const uploadDir = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const parts = rawImage.split(';base64,');
+        if (parts.length === 2) {
           const mimePart = parts[0];
           const base64Data = parts[1];
-          const ext = mimePart.split('/')[1] || 'jpg';
+          const ext = (mimePart.split('/')[1] || 'jpg').replace('+xml', '');
           const filename = `waste-${Date.now()}-${Math.round(Math.random() * 1E9)}.${ext}`;
           const filePath = path.join(uploadDir, filename);
           fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
           finalImageUrl = `/uploads/${filename}`;
-        } catch (imgParseErr) {
-          console.error('Base64 parse notice:', imgParseErr.message);
-          finalImageUrl = rawImage;
         }
-      } else {
+      } catch (imgParseErr) {
+        console.error('Base64 parse notice:', imgParseErr.message);
         finalImageUrl = rawImage;
       }
     }

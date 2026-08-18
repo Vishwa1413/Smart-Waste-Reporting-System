@@ -122,8 +122,8 @@ const UserDashboard = () => {
     setLoading(true);
 
     try {
-      let base64Image = '';
-      if (image) {
+      let base64Image = imagePreview || '';
+      if (!base64Image && image) {
         base64Image = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result || '');
@@ -138,6 +138,7 @@ const UserDashboard = () => {
       const response = await axios.post(`${baseUrl}/api/complaints`, {
         description,
         image: base64Image,
+        imageUrl: base64Image,
         lat,
         lng,
         address: 'Selected Location'
