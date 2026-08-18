@@ -6,8 +6,10 @@ const createComplaint = async (req, res) => {
     const { description, lat, lng, address } = req.body;
     let imageUrl = '';
 
-    if (req.file && req.file.filename) {
-      imageUrl = `/uploads/${req.file.filename}`;
+    if (req.file && req.file.buffer) {
+      const mime = req.file.mimetype || 'image/jpeg';
+      const base64 = req.file.buffer.toString('base64');
+      imageUrl = `data:${mime};base64,${base64}`;
     }
 
     const complaint = await Complaint.create({
@@ -25,7 +27,7 @@ const createComplaint = async (req, res) => {
       try {
         io.emit('newComplaint', complaint);
       } catch (socketErr) {
-        console.error('Socket emit error:', socketErr);
+        console.error('Socket emit notice:', socketErr);
       }
     }
 
