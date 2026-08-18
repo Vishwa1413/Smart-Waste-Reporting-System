@@ -1,0 +1,134 @@
+✅ SMART WASTE SYSTEM - VERIFICATION CHECKLIST
+
+Use this checklist to confirm everything is working correctly.
+
+═══════════════════════════════════════════════════════════════
+
+PRE-SETUP:
+☐ Node.js is installed (check: open CMD/Terminal, type "node -v")
+☐ Project folder is extracted
+☐ You have both files: start-backend.bat & start-frontend.bat
+   (or start-backend.sh & start-frontend.sh for Mac/Linux)
+
+═══════════════════════════════════════════════════════════════
+
+BACKEND STARTUP:
+☐ Clicked/ran start-backend.bat (or bash start-backend.sh)
+☐ Saw: "Installing dependencies..."
+☐ Saw: "Seeding database..."
+☐ Saw: "✓ Connected to SQLite and database synced"
+☐ Saw: "✓ Server running on port 5000"
+☐ NO ERROR MESSAGES showing
+☐ Terminal is STILL RUNNING
+
+═══════════════════════════════════════════════════════════════
+
+FRONTEND STARTUP:
+☐ Opened ANOTHER terminal/window
+☐ Clicked/ran start-frontend.bat (or bash start-frontend.sh)
+☐ Saw: "Installing dependencies..."
+☐ Saw: "➜  Local:   http://localhost:5173/"
+☐ NO ERROR MESSAGES showing
+☐ Terminal is STILL RUNNING
+
+═══════════════════════════════════════════════════════════════
+
+WEBSITE ACCESS:
+☐ Opened browser (Chrome, Firefox, Safari, Edge)
+☐ Went to: http://localhost:5173
+☐ Website loaded (not blank, shows login form)
+☐ Can see: "Smart Waste Management" title
+☐ Can see: "Welcome Back" text
+☐ Can see: Email and Password fields
+☐ Can see: "Sign In" button
+
+═══════════════════════════════════════════════════════════════
+
+LOGIN TEST:
+☐ Entered Email: jaja@admin.com
+☐ Entered Password: 123456
+☐ Clicked: "Sign In"
+☐ Got redirected to Dashboard (not error message)
+☐ Can see: "Admin Dashboard" title
+☐ Can see: Statistics cards with numbers
+☐ Can see: 5 complaint cards showing
+
+═══════════════════════════════════════════════════════════════
+
+ADMIN FEATURES TEST:
+☐ Can see: "Pending", "In Progress", "Completed" complaints
+☐ Can click: "Start Processing" button (on Pending complaints)
+☐ Status changes after clicking
+☐ Can click: "Mark Complete" button
+☐ Status changes to "Completed"
+☐ Can search: Type in search box, complaints filter
+☐ Can filter: Click status dropdown, list updates
+
+═══════════════════════════════════════════════════════════════
+
+MAP FEATURE TEST:
+☐ Click: "View Location" button on any complaint
+☐ Click: "Open" link (external link icon)
+☐ Google Maps opens in new tab
+☐ Location is marked on the map
+
+═══════════════════════════════════════════════════════════════
+
+LOGOUT & USER TEST:
+☐ Click: Logout button (in top right)
+☐ Redirected to login page
+☐ Tried login with: user@example.com / password123
+☐ Got redirected to User Dashboard
+☐ Can see: "Report a Waste Issue" form
+☐ Can see: "My Reports" sidebar with complaints
+
+═══════════════════════════════════════════════════════════════
+
+FINAL CHECKLIST:
+☐ Both terminals still running (backend & frontend)
+☐ No error messages in either terminal
+☐ Website responding quickly
+☐ Can login with both accounts
+☐ Admin can update complaint status
+☐ User can see their complaints
+
+═══════════════════════════════════════════════════════════════
+
+✅ IF ALL BOXES ARE CHECKED:
+   Everything is working perfectly! 🎉
+   You're ready to use the app.
+
+❌ IF ANY BOX IS UNCHECKED:
+   
+   1. Check the error message in terminal
+   2. Look at SETUP_GUIDE.txt "Troubleshooting" section
+   3. Restart both terminals
+   4. Reload the website (Ctrl+R)
+   5. Try again
+
+═══════════════════════════════════════════════════════════════
+
+DEMO FEATURES TO TRY:
+
+As Admin:
+  • View all 5 sample waste reports
+  • See statistics (Total, Pending, In Progress, Completed)
+  • Change complaint status to "In Progress"
+  • Change status to "Completed"
+  • View location on Google Maps
+  • Search/filter complaints
+
+As User:
+  • Logout and login as regular user
+  • View your submitted complaints
+  • See the reporting form
+  • (Optionally) Report new waste
+
+═══════════════════════════════════════════════════════════════
+
+Need help? Read these files:
+  • SETUP_GUIDE.txt - Detailed setup steps
+  • QUICK_START.md - More detailed guide
+  • README.md - Full documentation
+
+Happy testing! 🌱

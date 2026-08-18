@@ -1,0 +1,144 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     SMART WASTE REPORTING SYSTEM - SETUP GUIDE                 ║
+║                  Just 5 Simple Steps!                          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+⚙️ REQUIREMENTS:
+   • Node.js installed (https://nodejs.org/)
+   • Internet connection
+
+═══════════════════════════════════════════════════════════════
+
+🪟 FOR WINDOWS USERS:
+
+STEP 1: Double-Click to Start Backend
+   └─ Click: start-backend.bat
+   └─ Wait for it to say "Server running on port 5000"
+   └─ KEEP THIS WINDOW OPEN
+
+STEP 2: Double-Click to Start Frontend (in another window)
+   └─ Click: start-frontend.bat
+   └─ Wait for it to say "Local: http://localhost:5173"
+   └─ KEEP THIS WINDOW OPEN
+
+STEP 3: Open Browser
+   └─ Go to: http://localhost:5173
+
+STEP 4: Login with Demo Account
+   └─ Email: jaja@admin.com
+   └─ Password: 123456
+   └─ Click: Sign In
+
+STEP 5: Done! 🎉
+   └─ See all complaints
+   └─ Update their status
+   └─ Click "Start Processing" or "Mark Complete"
+
+═══════════════════════════════════════════════════════════════
+
+🍎 FOR MAC/LINUX USERS:
+
+STEP 1: Open Terminal in this folder
+
+STEP 2: Start Backend
+   └─ Type: bash start-backend.sh
+   └─ Press: Enter
+   └─ Wait for "Server running on port 5000"
+   └─ KEEP THIS WINDOW OPEN
+
+STEP 3: Open Another Terminal in this folder
+
+STEP 4: Start Frontend
+   └─ Type: bash start-frontend.sh
+   └─ Press: Enter
+   └─ Wait for "Local: http://localhost:5173"
+   └─ KEEP THIS WINDOW OPEN
+
+STEP 5: Open Browser
+   └─ Go to: http://localhost:5173
+
+STEP 6: Login with Demo Account
+   └─ Email: jaja@admin.com
+   └─ Password: 123456
+   └─ Click: Sign In
+
+STEP 7: Done! 🎉
+   └─ See all complaints
+   └─ Update their status
+   └─ Click buttons to change status
+
+═══════════════════════════════════════════════════════════════
+
+💻 OR USE COMMAND LINE (Any OS):
+
+TERMINAL 1:
+   cd server
+   npm install
+   node seed.js
+   node index.js
+
+TERMINAL 2:
+   cd client
+   npm install
+   npm run dev
+
+Then open: http://localhost:5173
+
+═══════════════════════════════════════════════════════════════
+
+🔐 LOGIN CREDENTIALS:
+
+ADMIN ACCOUNT (See all complaints):
+   Email: jaja@admin.com
+   Password: 123456
+
+USER ACCOUNT (Report waste):
+   Email: user@example.com
+   Password: password123
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANT:
+
+✓ Keep BOTH windows/terminals running
+✓ Don't close them while using the app
+✓ If you see an error, check the terminal
+✓ Make sure ports 5000 & 5173 are available
+
+═══════════════════════════════════════════════════════════════
+
+🆘 QUICK TROUBLESHOOTING:
+
+Problem: "npm not found"
+→ Install Node.js from https://nodejs.org/
+
+Problem: Port 5000 already in use
+→ Close other applications using that port
+
+Problem: "Can't login"
+→ Wait for "seed.js" to complete
+→ The demo data needs to be created first
+
+Problem: Page shows blank/nothing
+→ Check that BOTH terminals are running
+→ Reload the browser (Ctrl+R or Cmd+R)
+
+═══════════════════════════════════════════════════════════════
+
+✅ WHAT YOU'LL SEE:
+
+Backend Terminal:
+   ✓ Connected to SQLite and database synced
+   ✓ Server running on port 5000
+
+Frontend Terminal:
+   ➜  Local:   http://localhost:5173/
+
+Browser:
+   Smart Waste Management website with login form
+
+═══════════════════════════════════════════════════════════════
+
+That's it! You're ready to go! 🚀
+
+Questions? Read the QUICK_START.md file for more details.
