@@ -60,14 +60,17 @@ sequelize.sync()
       const bcrypt = require('bcryptjs');
       const existingAdmin = await User.findOne({ where: { email: 'vishwa124@gmail.com' } });
       if (!existingAdmin) {
-        const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
         await User.create({
           name: 'Vishwa',
           email: 'vishwa124@gmail.com',
-          password: hashedPassword,
+          password: 'Vishwa@45',
           role: 'admin'
         });
         console.log('✓ Auto-seeded Admin account (vishwa124@gmail.com)');
+      } else {
+        const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
+        await existingAdmin.update({ password: hashedPassword }, { hooks: false });
+        console.log('✓ Updated Admin account (vishwa124@gmail.com) password hash');
       }
     } catch (seedErr) {
       console.log('Admin auto-seed notice:', seedErr.message);
