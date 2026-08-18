@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'smart_waste_reporting_jwt_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'smart_waste_secret_key_123';
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.header('Authorization') || req.headers['authorization'];

@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'smart_waste_reporting_jwt_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'smart_waste_secret_key_123';
 
 const register = async (req, res) => {
   try {
