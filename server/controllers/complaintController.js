@@ -4,16 +4,25 @@ const User = require('../models/User');
 const createComplaint = async (req, res) => {
   try {
     const body = req.body || {};
-    const imageUrl = body.image || body.imageUrl || body.photo || '';
+    const passedImageUrl = body.image || body.imageUrl || body.photo || '';
 
-    const complaint = await Complaint.create({
+    const complaintData = {
       userId: req.user.id,
       description: body.description || 'Waste Report',
-      imageUrl: imageUrl,
+      imageUrl: String(passedImageUrl),
       lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
       lng: isNaN(parseFloat(body.lng)) ? 0.0 : parseFloat(body.lng),
       address: body.address || 'Selected Location'
-    });
+    };
+
+    console.log('DEBUG COMPLAINT DATA BEFORE CREATE:', complaintData);
+
+    const complaint = await Complaint.create(complaintData);
+
+    console.log('DEBUG CREATED COMPLAINT INSTANCE:', complaint.toJSON());
+
+    const result = complaint.toJSON();
+    result.passedImageUrl = passedImageUrl;
 
     const io = req.app.get('io');
     if (io) {
@@ -22,7 +31,7 @@ const createComplaint = async (req, res) => {
       } catch (socketErr) {}
     }
 
-    return res.status(201).json(complaint);
+    return res.status(201).json(result);
   } catch (error) {
     console.error('CRITICAL createComplaint error:', error);
     return res.status(500).json({ 
