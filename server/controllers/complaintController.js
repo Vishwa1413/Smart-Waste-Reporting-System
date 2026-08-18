@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const createComplaint = async (req, res) => {
   try {
-    const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body;
+    const { description, image, imageUrl: bodyImageUrl, lat, lng, address } = req.body || {};
     let finalImageUrl = image || bodyImageUrl || '';
 
     if (!finalImageUrl && req.file && req.file.buffer) {
@@ -32,8 +32,12 @@ const createComplaint = async (req, res) => {
 
     return res.status(201).json(complaint);
   } catch (error) {
-    console.error('Create complaint error:', error);
-    return res.status(500).json({ message: error.message || 'Server error creating complaint' });
+    console.error('CRITICAL createComplaint error:', error);
+    return res.status(500).json({ 
+      error: true, 
+      message: error.message || 'Server error creating complaint',
+      details: error.stack
+    });
   }
 };
 

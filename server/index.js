@@ -102,18 +102,6 @@ sequelize.sync()
     try {
       const queryInterface = sequelize.getQueryInterface();
       const tableInfo = await queryInterface.describeTable('Complaints');
-
-      // Ensure imageUrl is TEXT to support Base64 images
-      try {
-        await queryInterface.changeColumn('Complaints', 'imageUrl', {
-          type: require('sequelize').DataTypes.TEXT,
-          allowNull: true,
-          defaultValue: ''
-        });
-        console.log('✓ Updated Complaints.imageUrl to TEXT type');
-      } catch (imgErr) {
-        console.log('Image column update notice:', imgErr.message);
-      }
       
       if (!tableInfo.deletedByUser) {
         await queryInterface.addColumn('Complaints', 'deletedByUser', {
