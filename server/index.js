@@ -49,6 +49,10 @@ if (fs.existsSync(clientDistPath)) {
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
+} else {
+  app.get('/', (req, res) => {
+    res.json({ message: 'Smart Waste Reporting API Server is running live!' });
+  });
 }
 
 // Socket.io
