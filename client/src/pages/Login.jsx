@@ -132,7 +132,7 @@ const Login = () => {
             {/* Top Accent Line */}
             <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${theme.primaryGradient}`} />
 
-            <div className="flex flex-col items-center mb-8">
+            <div className="flex flex-col items-center mb-6">
               <motion.div 
                 whileHover={{ scale: 1.15, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -141,6 +141,9 @@ const Login = () => {
                 <LogIn size={32} />
               </motion.div>
               <h2 className="text-2xl font-bold text-slate-900">Welcome Back</h2>
+              <p className="text-xs text-slate-500 text-center mt-1">Sign in to report waste & manage reports</p>
+            </div>
+
             {/* Quick Demo Credentials Buttons */}
             <div className="flex gap-2 mb-4 w-full">
               <button
