@@ -141,7 +141,22 @@ const Login = () => {
                 <LogIn size={32} />
               </motion.div>
               <h2 className="text-2xl font-bold text-slate-900">Welcome Back</h2>
-              <p className="text-xs text-slate-500 text-center mt-1">Sign in to report waste & manage reports</p>
+            {/* Quick Demo Credentials Buttons */}
+            <div className="flex gap-2 mb-4 w-full">
+              <button
+                type="button"
+                onClick={() => { setEmail('vishwa123@gmail.com'); setPassword('Vishwa@45'); }}
+                className="flex-1 py-2 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-emerald-700 text-xs font-bold transition-all text-center shadow-sm"
+              >
+                👤 Fill User Login
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEmail('vishwa124@gmail.com'); setPassword('Vishwa@45'); }}
+                className="flex-1 py-2 px-3 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl text-purple-700 text-xs font-bold transition-all text-center shadow-sm"
+              >
+                🛡️ Fill Admin Login
+              </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
