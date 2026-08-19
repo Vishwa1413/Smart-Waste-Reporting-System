@@ -4,7 +4,7 @@
   "main": "server/index.js",
   "private": true,
   "scripts": {
-    "postinstall": "npm --prefix server install",
+    "postinstall": "cd client && npm install && npm run build && cd ../server && npm install",
     "start": "node server/index.js"
   }
 }
