@@ -34,7 +34,10 @@ const Login = () => {
     setLoading(true);
     try {
       const baseUrl = getApiUrl();
-      const response = await axios.post(`${baseUrl}/api/auth/login`, { email, password });
+      const response = await axios.post(`${baseUrl}/api/auth/login`, {
+        email: email.trim().toLowerCase(),
+        password: password.trim()
+      });
       login(response.data.user, response.data.token);
       toast.success('Login successful! Welcome back 👋');
       navigate(response.data.user.role === 'admin' ? '/admin' : '/dashboard');

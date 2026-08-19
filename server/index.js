@@ -77,7 +77,7 @@ sequelize.sync()
       const bcrypt = require('bcryptjs');
 
       // Admin Account
-      const existingAdmin = await User.findOne({ where: { email: 'vishwa124@gmail.com' } });
+      let existingAdmin = await User.findOne({ where: { email: 'vishwa124@gmail.com' } });
       if (!existingAdmin) {
         await User.create({
           name: 'Vishwa Admin',
@@ -87,12 +87,15 @@ sequelize.sync()
         });
         console.log('✓ Auto-seeded Admin account (vishwa124@gmail.com)');
       } else {
-        const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
-        await existingAdmin.update({ password: hashedPassword }, { hooks: false });
+        const isValid = await existingAdmin.comparePassword('Vishwa@45');
+        if (!isValid) {
+          const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
+          await existingAdmin.update({ password: hashedPassword, role: 'admin' }, { hooks: false });
+        }
       }
 
       // User Account
-      const existingUser = await User.findOne({ where: { email: 'vishwa123@gmail.com' } });
+      let existingUser = await User.findOne({ where: { email: 'vishwa123@gmail.com' } });
       if (!existingUser) {
         await User.create({
           name: 'Vishwa User',
@@ -102,8 +105,11 @@ sequelize.sync()
         });
         console.log('✓ Auto-seeded User account (vishwa123@gmail.com)');
       } else {
-        const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
-        await existingUser.update({ password: hashedPassword }, { hooks: false });
+        const isValid = await existingUser.comparePassword('Vishwa@45');
+        if (!isValid) {
+          const hashedPassword = await bcrypt.hash('Vishwa@45', 10);
+          await existingUser.update({ password: hashedPassword, role: 'user' }, { hooks: false });
+        }
       }
     } catch (seedErr) {
       console.log('Admin auto-seed notice:', seedErr.message);
