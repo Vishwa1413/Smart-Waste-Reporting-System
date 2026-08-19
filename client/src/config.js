@@ -7,6 +7,7 @@ export const getApiUrl = () => {
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return 'http://localhost:5000';
     }
+    return window.location.origin;
   }
-  return 'https://smart-waste-reporting-system-6lm0.onrender.com';
+  return 'https://smart-waste-reporting-system-3wlx.onrender.com';
 };
