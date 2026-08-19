@@ -27,7 +27,12 @@ const LocationPicker = ({ position, setPosition }) => {
 const MapPicker = ({ position, setPosition }) => {
   return (
     <div className="h-64 w-full rounded-xl overflow-hidden border border-slate-200">
-      <MapContainer center={[13.0827, 80.2707]} zoom={13} style={{ height: '100%', width: '100%' }}>
+      <MapContainer 
+        center={[13.0827, 80.2707]} 
+        zoom={13} 
+        style={{ height: '100%', width: '100%' }}
+        attributionControl={false}
+      >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <LocationPicker position={position} setPosition={setPosition} />
       </MapContainer>

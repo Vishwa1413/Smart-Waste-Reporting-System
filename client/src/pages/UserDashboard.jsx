@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Camera, MapPin, Send, Clock, CheckCircle, AlertCircle, Trash2, X, Sparkles, Cpu, Award, Leaf, ShieldAlert } from 'lucide-react';
@@ -20,6 +21,7 @@ const getImageUrl = (url) => {
 };
 
 const UserDashboard = () => {
+  const navigate = useNavigate();
   const [complaints, setComplaints] = useState([]);
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
@@ -120,7 +122,6 @@ const UserDashboard = () => {
     }
 
     setLoading(true);
-    const token = localStorage.getItem('token');
     const lat = position ? position.lat : 11.6643;
     const lng = position ? position.lng : 78.1460;
     const baseUrl = getApiUrl();
