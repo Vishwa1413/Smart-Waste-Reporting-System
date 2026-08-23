@@ -12,7 +12,7 @@ import { useTheme } from '../context/ThemeContext';
 import { getApiUrl } from '../config';
 
 const getImageUrl = (url) => {
-  if (!url) return '';
+  if (!url || url.startsWith('blob:')) return '';
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
@@ -127,13 +127,15 @@ const UserDashboard = () => {
     const baseUrl = getApiUrl();
 
     try {
-      let base64Image = imagePreview || '';
-      if (!base64Image && image) {
+      let base64Image = '';
+      if (image) {
         base64Image = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result || '');
           reader.readAsDataURL(image);
         });
+      } else if (imagePreview && !imagePreview.startsWith('blob:')) {
+        base64Image = imagePreview;
       }
 
       await axios.post(`${baseUrl}/api/complaints`, {

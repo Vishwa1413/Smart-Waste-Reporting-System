@@ -8,7 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 import { getApiUrl } from '../config';
 
 const getImageUrl = (url) => {
-  if (!url) return '';
+  if (!url || url.startsWith('blob:')) return '';
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
