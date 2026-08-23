@@ -10,5 +10,17 @@
         "4F:0A:3D:8A:94:33:E7:31:CF:D6:C6:AC:F5:EB:A3:22:DB:2E:AF:EC:E2:3D:ED:E2:50:6E:2A:AA:89:15:33:D7"
       ]
     }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.smartwaste.app",
+      "sha256_cert_fingerprints": [
+        "4F:0A:3D:8A:94:33:E7:31:CF:D6:C6:AC:F5:EB:A3:22:DB:2E:AF:EC:E2:3D:ED:E2:50:6E:2A:AA:89:15:33:D7"
+      ]
+    }
   }
 ]
