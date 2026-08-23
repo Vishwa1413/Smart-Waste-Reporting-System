@@ -88,32 +88,39 @@ const UserDashboard = () => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
+        const rawBase64 = e.target.result || '';
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+          try {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
 
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
             }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl || rawBase64);
+          } catch (err) {
+            console.error('Canvas compression fallback:', err);
+            resolve(rawBase64);
           }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
         };
-        img.onerror = () => resolve('');
-        img.src = e.target.result;
+        img.onerror = () => resolve(rawBase64);
+        img.src = rawBase64;
       };
       reader.onerror = () => resolve('');
       reader.readAsDataURL(file);
@@ -460,28 +467,26 @@ const UserDashboard = () => {
                           </div>
                         </div>
 
-                        {complaint.imageUrl && (
-                          <div 
-                            onClick={() => setSelectedModalImage(getImageUrl(complaint.imageUrl))}
-                            className="w-full h-44 sm:h-52 md:h-60 bg-slate-900 rounded-xl mb-2.5 overflow-hidden flex items-center justify-center border border-slate-200/80 shadow-sm relative group/img cursor-pointer"
-                          >
-                            <img 
-                              src={getImageUrl(complaint.imageUrl)} 
-                              className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
-                              alt="Waste Report Photo"
-                              onError={(e) => {
-                                if (e.target.src !== FALLBACK_IMAGE) {
-                                  e.target.src = FALLBACK_IMAGE;
-                                }
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                              <span className="px-3 py-1.5 rounded-lg bg-white/90 text-slate-900 text-[11px] font-extrabold flex items-center gap-1 shadow-md">
-                                🔍 Tap to Expand
-                              </span>
-                            </div>
+                        <div 
+                          onClick={() => setSelectedModalImage(getImageUrl(complaint.imageUrl))}
+                          className="w-full h-44 sm:h-52 md:h-60 bg-slate-900 rounded-xl mb-2.5 overflow-hidden flex items-center justify-center border border-slate-200/80 shadow-sm relative group/img cursor-pointer"
+                        >
+                          <img 
+                            src={getImageUrl(complaint.imageUrl)} 
+                            className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
+                            alt="Waste Report Photo"
+                            onError={(e) => {
+                              if (e.target.src !== FALLBACK_IMAGE) {
+                                e.target.src = FALLBACK_IMAGE;
+                              }
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="px-3 py-1.5 rounded-lg bg-white/90 text-slate-900 text-[11px] font-extrabold flex items-center gap-1 shadow-md">
+                              🔍 Tap to Expand
+                            </span>
                           </div>
-                        )}
+                        </div>
 
                         <p className="text-slate-700 text-xs font-semibold line-clamp-2 mb-2">{complaint.description}</p>
 
