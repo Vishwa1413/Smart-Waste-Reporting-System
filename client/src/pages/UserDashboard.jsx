@@ -316,7 +316,7 @@ const UserDashboard = () => {
                   <label className={`relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-2xl cursor-pointer bg-slate-50 ${theme.cardHoverBg} ${theme.cardHoverBorder} transition-all group overflow-hidden`}>
                     {imagePreview ? (
                       <>
-                        <img src={imagePreview} className="h-full w-full object-cover" alt="Preview" />
+                        <img src={imagePreview} className="h-full w-full object-contain bg-slate-900" alt="Preview" />
                         <button
                           type="button"
                           onClick={(e) => {
@@ -426,12 +426,14 @@ const UserDashboard = () => {
                         </div>
 
                         {complaint.imageUrl && (
-                          <img 
-                            src={getImageUrl(complaint.imageUrl)} 
-                            className="w-full h-24 object-cover rounded-xl mb-2 group-hover:scale-105 transition-transform duration-300"
-                            alt="Waste"
-                            onError={(e) => { console.error('Image load error:', complaint.imageUrl); }}
-                          />
+                          <div className="w-full h-44 bg-slate-900 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-200/60 shadow-inner">
+                            <img 
+                              src={getImageUrl(complaint.imageUrl)} 
+                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                              alt="Waste"
+                              onError={(e) => { console.error('Image load error:', complaint.imageUrl); }}
+                            />
+                          </div>
                         )}
 
                         <p className="text-slate-700 text-xs font-semibold line-clamp-2 mb-2">{complaint.description}</p>

@@ -306,7 +306,7 @@ const AdminDashboard = () => {
                     {complaint.imageUrl ? (
                       <img 
                         src={getImageUrl(complaint.imageUrl)} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-contain p-1 transition-transform duration-500 group-hover:scale-105"
                         alt="Waste Report"
                         onError={(e) => { console.error('Admin image load error:', complaint.imageUrl); }}
                       />
@@ -467,11 +467,11 @@ const AdminDashboard = () => {
 
               {/* Waste Image Evidence */}
               {selectedReport.imageUrl && (
-                <div className="rounded-2xl overflow-hidden bg-slate-900 h-60 border-2 border-slate-800 shadow-inner shrink-0 relative">
+                <div className="rounded-2xl overflow-hidden bg-slate-950 h-72 border-2 border-slate-800 shadow-inner shrink-0 relative flex items-center justify-center">
                   <img
                     src={getImageUrl(selectedReport.imageUrl)}
                     alt="Waste Evidence"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-1"
                   />
                   <div className="absolute bottom-3 right-3 px-3 py-1 bg-slate-900/80 backdrop-blur rounded-lg text-[10px] text-white font-mono">
                     Report ID #{selectedReport.id}
