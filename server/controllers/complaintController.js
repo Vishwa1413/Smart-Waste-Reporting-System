@@ -8,28 +8,7 @@ const createComplaint = async (req, res) => {
   try {
     const body = req.body || {};
     const passedImageUrl = body.image || body.imageUrl || body.photo || '';
-    let finalImageUrl = String(passedImageUrl);
-
-    // Save Base64 images as physical files in uploads directory
-    if (passedImageUrl && passedImageUrl.startsWith('data:image')) {
-      try {
-        const matches = passedImageUrl.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
-        if (matches) {
-          const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
-          const base64Data = matches[2];
-          const filename = `complaint_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
-          const uploadDir = path.join(__dirname, '../uploads');
-          if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-          }
-          const filePath = path.join(uploadDir, filename);
-          fs.writeFileSync(filePath, base64Data, 'base64');
-          finalImageUrl = `/uploads/${filename}`;
-        }
-      } catch (imgErr) {
-        console.error('Error writing image file from Base64:', imgErr);
-      }
-    }
+    const finalImageUrl = String(passedImageUrl);
 
     const complaintData = {
       userId: req.user.id,

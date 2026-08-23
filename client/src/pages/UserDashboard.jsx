@@ -11,8 +11,10 @@ import { useTheme } from '../context/ThemeContext';
 
 import { getApiUrl } from '../config';
 
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80';
+
 const getImageUrl = (url) => {
-  if (!url || url.startsWith('blob:')) return '';
+  if (!url || url.startsWith('blob:')) return FALLBACK_IMAGE;
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
@@ -29,6 +31,7 @@ const UserDashboard = () => {
   const [position, setPosition] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showAiScanner, setShowAiScanner] = useState(false);
+  const [selectedModalImage, setSelectedModalImage] = useState(null);
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -458,13 +461,25 @@ const UserDashboard = () => {
                         </div>
 
                         {complaint.imageUrl && (
-                          <div className="w-full h-44 bg-slate-900 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-200/60 shadow-inner">
+                          <div 
+                            onClick={() => setSelectedModalImage(getImageUrl(complaint.imageUrl))}
+                            className="w-full h-44 sm:h-52 md:h-60 bg-slate-900 rounded-xl mb-2.5 overflow-hidden flex items-center justify-center border border-slate-200/80 shadow-sm relative group/img cursor-pointer"
+                          >
                             <img 
                               src={getImageUrl(complaint.imageUrl)} 
-                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                              alt="Waste"
-                              onError={(e) => { console.error('Image load error:', complaint.imageUrl); }}
+                              className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
+                              alt="Waste Report Photo"
+                              onError={(e) => {
+                                if (e.target.src !== FALLBACK_IMAGE) {
+                                  e.target.src = FALLBACK_IMAGE;
+                                }
+                              }}
                             />
+                            <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="px-3 py-1.5 rounded-lg bg-white/90 text-slate-900 text-[11px] font-extrabold flex items-center gap-1 shadow-md">
+                                🔍 Tap to Expand
+                              </span>
+                            </div>
                           </div>
                         )}
 
@@ -483,6 +498,33 @@ const UserDashboard = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Lightbox Photo Preview Modal */}
+      {selectedModalImage && (
+        <div 
+          onClick={() => setSelectedModalImage(null)}
+          className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 cursor-zoom-out"
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button
+              onClick={() => setSelectedModalImage(null)}
+              className="absolute -top-12 right-0 bg-white/20 text-white hover:bg-white/40 p-2 rounded-full backdrop-blur transition-all"
+            >
+              <X size={24} />
+            </button>
+            <img 
+              src={selectedModalImage} 
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/20" 
+              alt="Expanded Waste Report" 
+              onError={(e) => {
+                if (e.target.src !== FALLBACK_IMAGE) {
+                  e.target.src = FALLBACK_IMAGE;
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

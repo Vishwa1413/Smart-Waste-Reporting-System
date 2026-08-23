@@ -7,8 +7,10 @@ import { io } from 'socket.io-client';
 import { useTheme } from '../context/ThemeContext';
 import { getApiUrl } from '../config';
 
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80';
+
 const getImageUrl = (url) => {
-  if (!url || url.startsWith('blob:')) return '';
+  if (!url || url.startsWith('blob:')) return FALLBACK_IMAGE;
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
@@ -301,20 +303,18 @@ const AdminDashboard = () => {
                   {/* Image Header */}
                   <div 
                     onClick={() => setSelectedReport(complaint)}
-                    className="relative h-48 overflow-hidden bg-slate-900 cursor-pointer"
+                    className="relative h-48 sm:h-56 md:h-64 overflow-hidden bg-slate-900 cursor-pointer"
                   >
-                    {complaint.imageUrl ? (
-                      <img 
-                        src={getImageUrl(complaint.imageUrl)} 
-                        className="w-full h-full object-contain p-1 transition-transform duration-500 group-hover:scale-105"
-                        alt="Waste Report"
-                        onError={(e) => { console.error('Admin image load error:', complaint.imageUrl); }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-500">
-                        <Trash2 size={48} className="opacity-30" />
-                      </div>
-                    )}
+                    <img 
+                      src={getImageUrl(complaint.imageUrl)} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      alt="Waste Report"
+                      onError={(e) => {
+                        if (e.target.src !== FALLBACK_IMAGE) {
+                          e.target.src = FALLBACK_IMAGE;
+                        }
+                      }}
+                    />
                     
                     <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase shadow-lg ${config.bg} ${config.text}`}>
                       {status}
