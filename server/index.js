@@ -21,13 +21,21 @@ app.get('/api/debug-version', (req, res) => res.json({ version: 'v1.0.9-jwt-fixe
 
 // Serve Android Digital Asset Links for full screen TWA App
 app.get('/.well-known/assetlinks.json', (req, res) => {
-  const assetlinksPath = path.join(__dirname, '../client/public/.well-known/assetlinks.json');
-  if (fs.existsSync(assetlinksPath)) {
-    res.setHeader('Content-Type', 'application/json');
-    res.sendFile(assetlinksPath);
-  } else {
-    res.status(404).json({ error: 'Assetlinks missing' });
-  }
+  res.setHeader('Content-Type', 'application/json');
+  res.json([
+    {
+      "relation": [
+        "delegate_permission/common.handle_all_urls"
+      ],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.onrender.smart_waste_reporting_system_3wlx.twa",
+        "sha256_cert_fingerprints": [
+          "4F:0A:3D:8A:94:33:E7:31:CF:D6:C6:AC:F5:EB:A3:22:DB:2E:AF:EC:E2:3D:ED:E2:50:6E:2A:AA:89:15:33:D7"
+        ]
+      }
+    }
+  ]);
 });
 const server = http.createServer(app);
 const io = new Server(server, {
