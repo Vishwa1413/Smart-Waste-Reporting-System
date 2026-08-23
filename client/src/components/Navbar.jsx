@@ -29,13 +29,12 @@ const Navbar = () => {
           {/* Logo */}
           <Link to={getHomePath()} className="flex items-center gap-2.5 group">
             <motion.div 
-              whileHover={{ rotate: 12, scale: 1.05 }}
+              whileHover={{ scale: 1.08, rotate: 3 }}
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="w-8 h-8 sm:w-9 sm:h-9 bg-white/95 rounded-xl flex items-center justify-center shadow-md border border-white/50 shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-xl flex items-center justify-center shadow-md p-1 border border-white/60 shrink-0 overflow-hidden"
             >
-              <Trash2 size={18} className={`${theme.accentText} sm:hidden`} />
-              <Trash2 size={20} className={`${theme.accentText} hidden sm:block`} />
+              <img src="/logo.png" alt="SmartWaste Logo" className="w-full h-full object-contain" />
             </motion.div>
             <div className="flex flex-col">
               <span className="font-black text-sm sm:text-base tracking-tight flex items-center gap-1 leading-tight">

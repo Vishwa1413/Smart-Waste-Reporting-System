@@ -221,9 +221,8 @@ const AdminDashboard = () => {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center backdrop-blur shadow-inner shrink-0">
-              <Trash2 size={20} className="sm:hidden" />
-              <Trash2 size={28} className="hidden sm:block" />
+            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center p-1.5 shadow-md border border-white/60 shrink-0 overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-lg sm:text-2xl md:text-3xl font-black flex items-center gap-1.5 leading-tight">
