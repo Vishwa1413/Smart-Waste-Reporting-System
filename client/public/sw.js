@@ -1,5 +1,5 @@
 // PWABuilder compliant Service Worker
-const CACHE_NAME = 'smart-waste-pwa-v1';
+const CACHE_NAME = 'smart-waste-pwa-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -33,6 +33,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // NEVER cache API calls or non-GET requests
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith('/api') || event.request.method !== 'GET') {
+    return;
+  }
+
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => {

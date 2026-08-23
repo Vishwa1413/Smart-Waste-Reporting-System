@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+const { Op } = require('sequelize');
 const Complaint = require('../models/Complaint');
 const User = require('../models/User');
 
@@ -5,11 +8,33 @@ const createComplaint = async (req, res) => {
   try {
     const body = req.body || {};
     const passedImageUrl = body.image || body.imageUrl || body.photo || '';
+    let finalImageUrl = String(passedImageUrl);
+
+    // Save Base64 images as physical files in uploads directory
+    if (passedImageUrl && passedImageUrl.startsWith('data:image')) {
+      try {
+        const matches = passedImageUrl.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+        if (matches) {
+          const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+          const base64Data = matches[2];
+          const filename = `complaint_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          const uploadDir = path.join(__dirname, '../uploads');
+          if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+          }
+          const filePath = path.join(uploadDir, filename);
+          fs.writeFileSync(filePath, base64Data, 'base64');
+          finalImageUrl = `/uploads/${filename}`;
+        }
+      } catch (imgErr) {
+        console.error('Error writing image file from Base64:', imgErr);
+      }
+    }
 
     const complaintData = {
       userId: req.user.id,
       description: body.description || 'Waste Report',
-      imageUrl: String(passedImageUrl),
+      imageUrl: finalImageUrl,
       lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
       lng: isNaN(parseFloat(body.lng)) ? 0.0 : parseFloat(body.lng),
       address: body.address || 'Selected Location'
@@ -22,7 +47,6 @@ const createComplaint = async (req, res) => {
     console.log('DEBUG CREATED COMPLAINT INSTANCE:', complaint.toJSON());
 
     const result = complaint.toJSON();
-    result.passedImageUrl = passedImageUrl;
 
     const io = req.app.get('io');
     if (io) {
@@ -46,7 +70,10 @@ const getUserComplaints = async (req, res) => {
     const complaints = await Complaint.findAll({ 
       where: { 
         userId: req.user.id,
-        deletedByUser: false
+        [Op.or]: [
+          { deletedByUser: false },
+          { deletedByUser: null }
+        ]
       },
       order: [['createdAt', 'DESC']]
     });
@@ -59,7 +86,12 @@ const getUserComplaints = async (req, res) => {
 const getAllComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.findAll({
-      where: { deletedByAdmin: false },
+      where: {
+        [Op.or]: [
+          { deletedByAdmin: false },
+          { deletedByAdmin: null }
+        ]
+      },
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
@@ -95,6 +127,7 @@ const updateStatus = async (req, res) => {
     if (io) {
       try {
         io.emit('updateComplaint', complaint);
+        io.emit('statusUpdated', complaint);
       } catch (socketErr) {}
     }
 
@@ -123,6 +156,8 @@ const deleteComplaint = async (req, res) => {
     if (io) {
       try {
         io.emit('deleteComplaint', req.params.id);
+        io.emit('complaintDeletedUser', { id: complaint.id });
+        io.emit('complaintDeletedAdmin', { id: complaint.id });
       } catch (socketErr) {}
     }
 

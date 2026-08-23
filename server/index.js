@@ -8,14 +8,19 @@ const { Server } = require('socket.io');
 const fs = require('fs');
 const sequelize = require('./config/db');
 
-const compression = require('compression');
+let compression;
+try {
+  compression = require('compression');
+} catch (e) {}
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 
 const app = express();
-app.use(compression());
+if (compression) {
+  app.use(compression());
+}
 app.get('/api/ping', (req, res) => res.send('pong'));
 app.get('/api/debug-version', (req, res) => res.json({ version: 'v1.0.9-jwt-fixed' }));
 
