@@ -71,7 +71,15 @@ app.use('/api/complaints', complaintRoutes);
 const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath, {
-    maxAge: '1d',
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+      }
+    },
     etag: true,
     dotfiles: 'allow'
   }));
@@ -79,6 +87,9 @@ if (fs.existsSync(clientDistPath)) {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/.well-known')) {
       return next();
     }
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 } else {
