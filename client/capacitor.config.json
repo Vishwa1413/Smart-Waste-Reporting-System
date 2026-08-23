@@ -1,5 +1,9 @@
 {
   "appId": "com.smartwaste.app",
   "appName": "Smart Waste Reporting",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://smart-waste-reporting-system-3wlx.onrender.com",
+    "cleartext": true
+  }
 }
