@@ -8,11 +8,15 @@ const { Server } = require('socket.io');
 const fs = require('fs');
 const sequelize = require('./config/db');
 
+const compression = require('compression');
+
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 
 const app = express();
+app.use(compression());
+app.get('/api/ping', (req, res) => res.send('pong'));
 app.get('/api/debug-version', (req, res) => res.json({ version: 'v1.0.9-jwt-fixed' }));
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -33,7 +37,7 @@ const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadDir));
+app.use('/uploads', express.static(uploadDir, { maxAge: '7d' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -42,7 +46,10 @@ app.use('/api/complaints', complaintRoutes);
 // Serve static client build if available (Unified Render Deployment)
 const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
+  app.use(express.static(clientDistPath, {
+    maxAge: '1d',
+    etag: true
+  }));
   app.use((req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
       return next();
