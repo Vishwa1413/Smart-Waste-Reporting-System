@@ -18,6 +18,17 @@ const app = express();
 app.use(compression());
 app.get('/api/ping', (req, res) => res.send('pong'));
 app.get('/api/debug-version', (req, res) => res.json({ version: 'v1.0.9-jwt-fixed' }));
+
+// Serve Android Digital Asset Links for full screen TWA App
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  const assetlinksPath = path.join(__dirname, '../client/public/.well-known/assetlinks.json');
+  if (fs.existsSync(assetlinksPath)) {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(assetlinksPath);
+  } else {
+    res.status(404).json({ error: 'Assetlinks missing' });
+  }
+});
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
