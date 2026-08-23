@@ -27,19 +27,21 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to={getHomePath()} className="flex items-center gap-3 group">
+          <Link to={getHomePath()} className="flex items-center gap-2.5 group">
             <motion.div 
-              whileHover={{ rotate: 180, scale: 1.1 }}
-              transition={{ duration: 0.4 }}
-              className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md"
+              whileHover={{ rotate: 12, scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="w-8 h-8 sm:w-9 sm:h-9 bg-white/95 rounded-xl flex items-center justify-center shadow-md border border-white/50 shrink-0"
             >
-              <Trash2 size={24} className={theme.accentText} />
+              <Trash2 size={18} className={`${theme.accentText} sm:hidden`} />
+              <Trash2 size={20} className={`${theme.accentText} hidden sm:block`} />
             </motion.div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-lg tracking-tight flex items-center gap-1.5">
-                SmartWaste <Sparkles size={14} className="text-amber-300 animate-pulse" />
+              <span className="font-black text-sm sm:text-base tracking-tight flex items-center gap-1 leading-tight">
+                SmartWaste <Sparkles size={12} className="text-amber-300 animate-pulse" />
               </span>
-              <span className="text-[10px] text-emerald-100 font-mono tracking-widest uppercase">AI Eco Platform</span>
+              <span className="text-[9px] sm:text-[10px] text-emerald-100/90 font-medium tracking-widest uppercase">AI Eco Platform</span>
             </div>
           </Link>
 

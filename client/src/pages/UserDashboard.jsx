@@ -214,28 +214,29 @@ const UserDashboard = () => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-gradient-to-r ${theme.primaryGradient} text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden`}
+        className={`bg-gradient-to-r ${theme.primaryGradient} text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl relative overflow-hidden`}
       >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur shadow-inner">
-              <Trash2 size={32} />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 relative z-10">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center backdrop-blur shadow-inner shrink-0">
+              <Trash2 size={20} className="sm:hidden" />
+              <Trash2 size={28} className="hidden sm:block" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold flex items-center gap-2">
-                Waste Reporting Dashboard <Sparkles size={22} className="text-amber-300 animate-bounce" />
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black flex items-center gap-1.5 leading-tight">
+                Waste Reporting Dashboard <Sparkles size={18} className="text-amber-300 animate-bounce hidden sm:inline-block" />
               </h1>
-              <p className="text-emerald-100 text-sm mt-1">AI-Powered Waste Hazard Detection & Live Dispatch Tracking</p>
+              <p className="text-emerald-100/90 text-xs sm:text-sm mt-0.5 sm:mt-1">AI-Powered Hazard Detection & Dispatch Tracking</p>
             </div>
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.04, y: -1 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => setShowAiScanner(true)}
-            className="px-5 py-3 rounded-2xl bg-white text-slate-900 font-bold text-sm shadow-xl flex items-center gap-2 border border-white/50 hover:bg-slate-50 transition-all self-start md:self-auto"
+            className="px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white text-slate-900 font-extrabold text-xs sm:text-sm shadow-lg flex items-center justify-center gap-2 border border-white/50 hover:bg-slate-50 transition-all self-stretch sm:self-start md:self-auto"
           >
-            <Cpu size={18} className={theme.accentText} /> Open AI Scanner
+            <Cpu size={16} className={theme.accentText} /> Open AI Scanner
           </motion.button>
         </div>
       </motion.div>

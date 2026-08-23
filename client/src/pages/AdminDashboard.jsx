@@ -217,18 +217,19 @@ const AdminDashboard = () => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-gradient-to-r ${theme.primaryGradient} text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden`}
+        className={`bg-gradient-to-r ${theme.primaryGradient} text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl relative overflow-hidden`}
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur shadow-inner">
-              <Trash2 size={32} />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center backdrop-blur shadow-inner shrink-0">
+              <Trash2 size={20} className="sm:hidden" />
+              <Trash2 size={28} className="hidden sm:block" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold flex items-center gap-2">
-                Admin Dispatch Command <Sparkles size={22} className="text-amber-300" />
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black flex items-center gap-1.5 leading-tight">
+                Admin Dispatch Command <Sparkles size={18} className="text-amber-300 hidden sm:inline-block" />
               </h1>
-              <p className="text-emerald-100 text-sm mt-1">Real-time waste complaint dispatch & resolution tracking</p>
+              <p className="text-emerald-100/90 text-xs sm:text-sm mt-0.5 sm:mt-1">Real-time waste complaint dispatch & resolution tracking</p>
             </div>
           </div>
         </div>
