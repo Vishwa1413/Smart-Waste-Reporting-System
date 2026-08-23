@@ -7,10 +7,9 @@
       "namespace": "android_app",
       "package_name": "com.onrender.smart_waste_reporting_system_3wlx.twa",
       "sha256_cert_fingerprints": [
+        "09:4D:BA:91:58:59:A9:C8:AD:C7:02:EC:1D:1A:0B:7E:89:13:CC:99:65:B4:90:07:F1:A8:DD:F1:FC:D3:59:CB",
         "4F:0A:3D:8A:94:33:E7:31:CF:D6:C6:AC:F5:EB:A3:22:DB:2E:AF:EC:E2:3D:ED:E2:50:6E:2A:AA:89:15:33:D7",
-        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C",
-        "92:7C:ED:35:E4:94:56:88:51:7A:B4:EB:42:AC:AD:B5:46:1D:93:1C:18:BD:BA:2A:4A:27:0B:01:A0:8E:AA:EF",
-        "14:6D:E9:7D:6D:FD:F4:DF:5E:FE:AA:E3:FA:E6:37:A6:49:EE:48:6D:77:E5:A9:E1:8F:D5:78:66:44:4A:C9:46"
+        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C"
       ]
     }
   },
@@ -22,10 +21,8 @@
       "namespace": "android_app",
       "package_name": "com.smartwaste.app",
       "sha256_cert_fingerprints": [
-        "4F:0A:3D:8A:94:33:E7:31:CF:D6:C6:AC:F5:EB:A3:22:DB:2E:AF:EC:E2:3D:ED:E2:50:6E:2A:AA:89:15:33:D7",
-        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C",
-        "92:7C:ED:35:E4:94:56:88:51:7A:B4:EB:42:AC:AD:B5:46:1D:93:1C:18:BD:BA:2A:4A:27:0B:01:A0:8E:AA:EF",
-        "14:6D:E9:7D:6D:FD:F4:DF:5E:FE:AA:E3:FA:E6:37:A6:49:EE:48:6D:77:E5:A9:E1:8F:D5:78:66:44:4A:C9:46"
+        "09:4D:BA:91:58:59:A9:C8:AD:C7:02:EC:1D:1A:0B:7E:89:13:CC:99:65:B4:90:07:F1:A8:DD:F1:FC:D3:59:CB",
+        "4F:0A:3D:8A:94:33:E7:31:CF:D6:C6:AC:F5:EB:A3:22:DB:2E:AF:EC:E2:3D:ED:E2:50:6E:2A:AA:89:15:33:D7"
       ]
     }
   }
