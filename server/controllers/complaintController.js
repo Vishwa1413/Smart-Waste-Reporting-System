@@ -44,6 +44,21 @@ const createComplaint = async (req, res) => {
   }
 };
 
+const SVG_FALLBACK = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'><rect width='600' height='400' fill='%230f172a'/><path d='M250 160 L350 160 L330 250 L270 250 Z M240 140 L360 140' stroke='%2310b981' stroke-width='12' stroke-linecap='round' fill='none'/><circle cx='300' cy='200' r='15' fill='%2310b981'/><text x='300' y='320' fill='%23f8fafc' font-family='sans-serif' font-size='20' font-weight='bold' text-anchor='middle'>SmartWaste Verified Report</text></svg>";
+
+const sanitizeComplaintImage = (c) => {
+  const obj = c.toJSON ? c.toJSON() : c;
+  if (!obj.imageUrl) {
+    obj.imageUrl = SVG_FALLBACK;
+  } else if (obj.imageUrl.startsWith('/uploads/')) {
+    const localFile = path.join(__dirname, '..', obj.imageUrl);
+    if (!fs.existsSync(localFile)) {
+      obj.imageUrl = SVG_FALLBACK;
+    }
+  }
+  return obj;
+};
+
 const getUserComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.findAll({ 
@@ -56,7 +71,7 @@ const getUserComplaints = async (req, res) => {
       },
       order: [['createdAt', 'DESC']]
     });
-    return res.json(complaints);
+    return res.json(complaints.map(sanitizeComplaintImage));
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -74,7 +89,7 @@ const getAllComplaints = async (req, res) => {
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
-    return res.json(complaints);
+    return res.json(complaints.map(sanitizeComplaintImage));
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -87,7 +102,7 @@ const getCompletedHistory = async (req, res) => {
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['updatedAt', 'DESC']]
     });
-    return res.json(complaints);
+    return res.json(complaints.map(sanitizeComplaintImage));
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
