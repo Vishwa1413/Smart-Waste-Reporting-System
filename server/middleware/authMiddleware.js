@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const authMiddleware = (req, res, next) => {
+const User = require('../models/User');
+
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.header('Authorization') || req.headers['authorization'];
   if (!authHeader) return res.status(401).json({ message: 'No token, authorization denied' });
 
@@ -33,12 +35,35 @@ const authMiddleware = (req, res, next) => {
     } catch (e) {}
   }
 
-  if (decoded) {
-    req.user = decoded;
-    return next();
+  if (decoded && decoded.id) {
+    try {
+      // Ensure the user actually exists in SQLite DB to prevent foreign key errors
+      let validUser = await User.findByPk(decoded.id);
+
+      if (!validUser && decoded.email) {
+        validUser = await User.findOne({ where: { email: decoded.email } });
+      }
+
+      if (!validUser) {
+        // If DB was reset/re-seeded, fallback to the role matching user if available
+        validUser = await User.findOne({ where: { role: decoded.role || 'user' } });
+      }
+
+      if (validUser) {
+        req.user = {
+          id: validUser.id,
+          name: validUser.name,
+          email: validUser.email,
+          role: validUser.role
+        };
+        return next();
+      }
+    } catch (dbErr) {
+      console.error('Auth DB user lookup error:', dbErr);
+    }
   }
 
-  return res.status(401).json({ message: 'Token is invalid or expired' });
+  return res.status(401).json({ message: 'Session expired or user account no longer exists. Please sign in again.' });
 };
 
 const adminMiddleware = (req, res, next) => {

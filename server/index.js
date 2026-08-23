@@ -128,6 +128,14 @@ const PORT = process.env.PORT || 5000;
 sequelize.sync()
   .then(async () => {
     console.log('✓ Connected to SQLite and database synced');
+
+    // Enable SQLite Write-Ahead Logging (WAL) & busy timeout for concurrent multi-user support
+    try {
+      await sequelize.query('PRAGMA journal_mode = WAL;');
+      await sequelize.query('PRAGMA busy_timeout = 10000;');
+    } catch (pragmaErr) {
+      console.log('PRAGMA WAL notice:', pragmaErr.message);
+    }
     
     // Auto-seed default Admin & User accounts on startup if not present
     try {

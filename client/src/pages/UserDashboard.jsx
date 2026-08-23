@@ -67,7 +67,14 @@ const UserDashboard = () => {
       });
       setComplaints(response.data);
     } catch (error) {
-      toast.error('Failed to fetch complaints');
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        toast.error('Session expired. Please sign in again.');
+        navigate('/login');
+      } else {
+        toast.error('Failed to fetch complaints');
+      }
     }
   };
 
@@ -203,8 +210,15 @@ const UserDashboard = () => {
       fetchComplaints();
     } catch (error) {
       console.error('Submit report error:', error);
-      const errMsg = error.response?.data?.message || 'Failed to submit report. Please re-login.';
-      toast.error(errMsg);
+      if (error.response?.status === 401 || error.response?.data?.message?.includes('session')) {
+        toast.error('Session expired. Redirecting to login page...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => navigate('/login'), 1200);
+      } else {
+        const errMsg = error.response?.data?.message || 'Failed to submit report. Please try again.';
+        toast.error(errMsg);
+      }
     } finally {
       setLoading(false);
     }

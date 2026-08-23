@@ -85,7 +85,13 @@ const AdminDashboard = () => {
       });
       setComplaints(response.data);
     } catch (error) {
-      toast.error('Failed to fetch complaints');
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        toast.error('Session expired. Please sign in again.');
+      } else {
+        toast.error('Failed to fetch complaints');
+      }
     }
   };
 

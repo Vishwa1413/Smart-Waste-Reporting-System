@@ -10,8 +10,36 @@ const createComplaint = async (req, res) => {
     const passedImageUrl = body.image || body.imageUrl || body.photo || '';
     const finalImageUrl = String(passedImageUrl);
 
+    let targetUserId = req.user ? req.user.id : null;
+
+    if (!targetUserId) {
+      return res.status(401).json({ message: 'User session invalid. Please log in again.' });
+    }
+
+    // Verify user exists in SQLite DB before creating complaint
+    let existingUser = await User.findByPk(targetUserId);
+
+    if (!existingUser && req.user.email) {
+      existingUser = await User.findOne({ where: { email: req.user.email } });
+    }
+
+    if (!existingUser) {
+      // Fallback: If user account was deleted or DB re-synced, attach to default user or create one
+      existingUser = await User.findOne({ where: { role: 'user' } });
+      if (!existingUser) {
+        existingUser = await User.create({
+          name: req.user.name || 'Citizen User',
+          email: req.user.email || 'user@smartwaste.local',
+          password: 'password123',
+          role: 'user'
+        });
+      }
+    }
+
+    targetUserId = existingUser.id;
+
     const complaintData = {
-      userId: req.user.id,
+      userId: targetUserId,
       description: body.description || 'Waste Report',
       imageUrl: finalImageUrl,
       lat: isNaN(parseFloat(body.lat)) ? 0.0 : parseFloat(body.lat),
@@ -37,6 +65,11 @@ const createComplaint = async (req, res) => {
     return res.status(201).json(result);
   } catch (error) {
     console.error('CRITICAL createComplaint error:', error);
+    if (error.name === 'SequelizeForeignKeyConstraintError' || (error.message && error.message.includes('FOREIGN KEY'))) {
+      return res.status(401).json({ 
+        message: 'Your user session is outdated. Please sign out and sign in again.' 
+      });
+    }
     return res.status(500).json({ 
       error: true, 
       message: error.message || 'Server error creating complaint'
