@@ -22,7 +22,7 @@ app.get('/api/debug-version', (req, res) => res.json({ version: 'v1.0.9-jwt-fixe
 // Serve Android Digital Asset Links for full screen TWA App
 app.get('/.well-known/assetlinks.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  res.json([
+  res.status(200).send(JSON.stringify([
     {
       "relation": [
         "delegate_permission/common.handle_all_urls"
@@ -35,7 +35,7 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
         ]
       }
     }
-  ]);
+  ], null, 2));
 });
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -67,7 +67,8 @@ const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath, {
     maxAge: '1d',
-    etag: true
+    etag: true,
+    dotfiles: 'allow'
   }));
   app.use((req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/.well-known')) {
