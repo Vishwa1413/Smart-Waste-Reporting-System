@@ -62,7 +62,7 @@ if (fs.existsSync(clientDistPath)) {
     etag: true
   }));
   app.use((req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/.well-known')) {
       return next();
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
