@@ -10,7 +10,9 @@ import { getApiUrl } from '../config';
 const FALLBACK_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'><rect width='600' height='400' fill='%230f172a'/><path d='M250 160 L350 160 L330 250 L270 250 Z M240 140 L360 140' stroke='%2310b981' stroke-width='12' stroke-linecap='round' fill='none'/><circle cx='300' cy='200' r='15' fill='%2310b981'/><text x='300' y='320' fill='%23f8fafc' font-family='sans-serif' font-size='20' font-weight='bold' text-anchor='middle'>SmartWaste Verified Report</text></svg>";
 
 const getImageUrl = (url) => {
-  if (!url || url.startsWith('blob:')) return FALLBACK_IMAGE;
+  if (!url || typeof url !== 'string' || url === 'null' || url === 'undefined' || url.trim() === '' || url.startsWith('blob:')) {
+    return FALLBACK_IMAGE;
+  }
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
