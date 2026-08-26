@@ -204,7 +204,29 @@ sequelize.sync()
       console.log('Column sync status:', colErr.message);
     }
 
-    server.listen(PORT, () => console.log(`✓ Server running on port ${PORT}`));
+    server.listen(PORT, () => {
+      console.log(`✓ Server running on port ${PORT}`);
+      
+      // Render Keep-Alive Self-Ping Interval (Keeps web service active 24/7)
+      const RENDER_PUBLIC_URL = process.env.RENDER_EXTERNAL_URL || 'https://smart-waste-reporting-system-3wlx.onrender.com';
+      const keepAlive = () => {
+        try {
+          const pingUrl = `${RENDER_PUBLIC_URL.replace(/\/+$/, '')}/api/ping`;
+          const protocol = pingUrl.startsWith('https') ? require('https') : require('http');
+          protocol.get(pingUrl, (res) => {
+            console.log(`[Render Keep-Alive Ping] Status: ${res.statusCode}`);
+          }).on('error', (err) => {
+            console.log('[Render Keep-Alive Ping Notice]:', err.message);
+          });
+        } catch (err) {
+          console.log('[Render Keep-Alive Execution Notice]:', err.message);
+        }
+      };
+
+      // Run initial ping after 10 seconds, then repeat every 10 minutes (600,000ms)
+      setTimeout(keepAlive, 10000);
+      setInterval(keepAlive, 10 * 60 * 1000);
+    });
   })
   .catch(err => {
     console.error('✗ Unable to connect to database:', err);

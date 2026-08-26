@@ -24,16 +24,7 @@ const createComplaint = async (req, res) => {
     }
 
     if (!existingUser) {
-      // Fallback: If user account was deleted or DB re-synced, attach to default user or create one
-      existingUser = await User.findOne({ where: { role: 'user' } });
-      if (!existingUser) {
-        existingUser = await User.create({
-          name: req.user.name || 'Citizen User',
-          email: req.user.email || 'user@smartwaste.local',
-          password: 'password123',
-          role: 'user'
-        });
-      }
+      return res.status(401).json({ message: 'User session expired or user account not found. Please sign in again.' });
     }
 
     targetUserId = existingUser.id;

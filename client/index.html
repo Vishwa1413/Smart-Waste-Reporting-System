@@ -10,6 +10,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Immediate Pre-warm Ping to eliminate Render backend spin-up delay
+      (function() {
+        try {
+          var host = window.location.hostname;
+          var target = (host === 'localhost' || host === '127.0.0.1')
+            ? '/api/ping'
+            : 'https://smart-waste-reporting-system-3wlx.onrender.com/api/ping';
+          fetch(target, { mode: 'cors', cache: 'no-store' }).catch(function(){});
+        } catch(e) {}
+      })();
+    </script>
     <script type="module" src="./src/main.jsx"></script>
     <script>
       // Immediately unregister any legacy service workers and clear cache storage

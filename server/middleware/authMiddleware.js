@@ -35,18 +35,16 @@ const authMiddleware = async (req, res, next) => {
     } catch (e) {}
   }
 
-  if (decoded && decoded.id) {
+  if (decoded) {
     try {
-      // Ensure the user actually exists in SQLite DB to prevent foreign key errors
-      let validUser = await User.findByPk(decoded.id);
+      // Ensure the user actually exists in SQLite DB to prevent foreign key errors & user cross-talk
+      let validUser = null;
+      if (decoded.id) {
+        validUser = await User.findByPk(decoded.id);
+      }
 
       if (!validUser && decoded.email) {
         validUser = await User.findOne({ where: { email: decoded.email } });
-      }
-
-      if (!validUser) {
-        // If DB was reset/re-seeded, fallback to the role matching user if available
-        validUser = await User.findOne({ where: { role: decoded.role || 'user' } });
       }
 
       if (validUser) {
