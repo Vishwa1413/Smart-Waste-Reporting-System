@@ -105,9 +105,19 @@ const getAllComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.findAll({
       where: {
-        [Op.or]: [
-          { deletedByAdmin: false },
-          { deletedByAdmin: null }
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { deletedByAdmin: false },
+              { deletedByAdmin: null }
+            ]
+          },
+          {
+            [Op.or]: [
+              { deletedByUser: false },
+              { deletedByUser: null }
+            ]
+          }
         ]
       },
       include: [{ model: User, attributes: ['name', 'email'] }],
@@ -122,7 +132,23 @@ const getAllComplaints = async (req, res) => {
 const getCompletedHistory = async (req, res) => {
   try {
     const complaints = await Complaint.findAll({
-      where: { status: 'Completed' },
+      where: { 
+        status: 'Completed',
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { deletedByAdmin: false },
+              { deletedByAdmin: null }
+            ]
+          },
+          {
+            [Op.or]: [
+              { deletedByUser: false },
+              { deletedByUser: null }
+            ]
+          }
+        ]
+      },
       include: [{ model: User, attributes: ['name', 'email'] }],
       order: [['updatedAt', 'DESC']]
     });
@@ -173,9 +199,10 @@ const deleteComplaint = async (req, res) => {
     const io = req.app.get('io');
     if (io) {
       try {
-        io.emit('deleteComplaint', req.params.id);
+        io.emit('deleteComplaint', complaint.id);
         io.emit('complaintDeletedUser', { id: complaint.id });
         io.emit('complaintDeletedAdmin', { id: complaint.id });
+        io.emit('complaintDeletedGlobal', { id: complaint.id });
       } catch (socketErr) {}
     }
 

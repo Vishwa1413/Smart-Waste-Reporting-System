@@ -63,17 +63,29 @@ const AdminDashboard = () => {
       toast.success('New waste report received! 🗑️', { duration: 3 });
     });
 
+    newSocket.on('complaintDeletedUser', ({ id }) => {
+      const numId = Number(id);
+      setComplaints(prev => prev.filter(c => c.id !== numId && c.id !== id));
+      setCompletedHistory(prev => prev.filter(c => c.id !== numId && c.id !== id));
+      if (selectedReport?.id === numId || selectedReport?.id === id) {
+        setSelectedReport(null);
+      }
+    });
+
     newSocket.on('complaintDeletedAdmin', ({ id }) => {
-      setComplaints(prev => prev.filter(c => c.id !== id));
-      if (selectedReport?.id === id) {
+      const numId = Number(id);
+      setComplaints(prev => prev.filter(c => c.id !== numId && c.id !== id));
+      setCompletedHistory(prev => prev.filter(c => c.id !== numId && c.id !== id));
+      if (selectedReport?.id === numId || selectedReport?.id === id) {
         setSelectedReport(null);
       }
     });
 
     newSocket.on('complaintDeletedGlobal', ({ id }) => {
-      setComplaints(prev => prev.filter(c => c.id !== id));
-      setCompletedHistory(prev => prev.filter(c => c.id !== id));
-      if (selectedReport?.id === id) {
+      const numId = Number(id);
+      setComplaints(prev => prev.filter(c => c.id !== numId && c.id !== id));
+      setCompletedHistory(prev => prev.filter(c => c.id !== numId && c.id !== id));
+      if (selectedReport?.id === numId || selectedReport?.id === id) {
         setSelectedReport(null);
       }
     });
