@@ -47,6 +47,19 @@ const authMiddleware = async (req, res, next) => {
         validUser = await User.findOne({ where: { email: decoded.email } });
       }
 
+      // If user record is missing in DB after Render restart, auto-provision user from valid token
+      if (!validUser && decoded.email) {
+        const rawName = decoded.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ');
+        const formattedName = rawName ? (rawName.charAt(0).toUpperCase() + rawName.slice(1)) : 'User';
+        validUser = await User.create({
+          name: formattedName,
+          email: decoded.email,
+          password: 'password123',
+          role: decoded.role || (decoded.email.toLowerCase().includes('admin') ? 'admin' : 'user')
+        });
+        console.log(`✓ Auto-restored user in authMiddleware: ${decoded.email}`);
+      }
+
       if (validUser) {
         req.user = {
           id: validUser.id,
