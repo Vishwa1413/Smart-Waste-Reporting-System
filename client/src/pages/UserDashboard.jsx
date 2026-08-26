@@ -55,16 +55,10 @@ const UserDashboard = () => {
 
   const closeModalImage = () => {
     setSelectedModalImage(null);
-    if (window.history.state && window.history.state.modalOpen) {
-      window.history.back();
-    }
   };
 
   const closeAiScanner = () => {
     setShowAiScanner(false);
-    if (window.history.state && window.history.state.modalOpen) {
-      window.history.back();
-    }
   };
 
   useEffect(() => {
@@ -98,14 +92,7 @@ const UserDashboard = () => {
       });
       setComplaints(response.data);
     } catch (error) {
-      if (error.response?.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        toast.error('Session expired. Please sign in again.');
-        navigate('/login');
-      } else {
-        toast.error('Failed to fetch complaints');
-      }
+      console.warn('Fetch user complaints notice:', error.message);
     }
   };
 

@@ -50,9 +50,6 @@ const AdminDashboard = () => {
 
   const closeReportModal = () => {
     setSelectedReport(null);
-    if (window.history.state && window.history.state.modalOpen) {
-      window.history.back();
-    }
   };
 
   useEffect(() => {
@@ -108,13 +105,7 @@ const AdminDashboard = () => {
       });
       setComplaints(response.data);
     } catch (error) {
-      if (error.response?.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        toast.error('Session expired. Please sign in again.');
-      } else {
-        toast.error('Failed to fetch complaints');
-      }
+      console.warn('Fetch all complaints notice:', error.message);
     }
   };
 
@@ -132,7 +123,7 @@ const AdminDashboard = () => {
         return next;
       });
     } catch (error) {
-      console.log('Failed to fetch completed history');
+      console.warn('Fetch completed history notice:', error.message);
     }
   };
 
