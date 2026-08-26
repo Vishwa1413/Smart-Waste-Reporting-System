@@ -32,6 +32,29 @@ const AdminDashboard = () => {
   const [selectedReport, setSelectedReport] = useState(null);
   const { theme } = useTheme();
 
+  // Handle browser / Android hardware back button when modal is open
+  useEffect(() => {
+    if (selectedReport) {
+      window.history.pushState({ modalOpen: true }, '');
+
+      const handlePopState = () => {
+        setSelectedReport(null);
+      };
+
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+  }, [selectedReport]);
+
+  const closeReportModal = () => {
+    setSelectedReport(null);
+    if (window.history.state && window.history.state.modalOpen) {
+      window.history.back();
+    }
+  };
+
   useEffect(() => {
     fetchComplaints();
     fetchCompletedHistory();
@@ -440,7 +463,7 @@ const AdminDashboard = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedReport(null)}
+            onClick={closeReportModal}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -466,7 +489,7 @@ const AdminDashboard = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSelectedReport(null)}
+                  onClick={closeReportModal}
                   className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <X size={20} />

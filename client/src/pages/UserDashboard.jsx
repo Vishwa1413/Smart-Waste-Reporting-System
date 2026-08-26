@@ -36,6 +36,37 @@ const UserDashboard = () => {
   const [selectedModalImage, setSelectedModalImage] = useState(null);
   const { theme } = useTheme();
 
+  // Prevent browser/Android back button from exiting to login page when modal is open
+  useEffect(() => {
+    if (selectedModalImage || showAiScanner) {
+      window.history.pushState({ modalOpen: true }, '');
+
+      const handlePopState = () => {
+        setSelectedModalImage(null);
+        setShowAiScanner(false);
+      };
+
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+  }, [selectedModalImage, showAiScanner]);
+
+  const closeModalImage = () => {
+    setSelectedModalImage(null);
+    if (window.history.state && window.history.state.modalOpen) {
+      window.history.back();
+    }
+  };
+
+  const closeAiScanner = () => {
+    setShowAiScanner(false);
+    if (window.history.state && window.history.state.modalOpen) {
+      window.history.back();
+    }
+  };
+
   useEffect(() => {
     fetchComplaints();
     const baseUrl = getApiUrl();
@@ -319,7 +350,7 @@ const UserDashboard = () => {
           >
             <AiWasteScanner 
               onApplyScanResult={handleApplyAiResult} 
-              onClose={() => setShowAiScanner(false)} 
+              onClose={closeAiScanner} 
             />
           </motion.div>
         )}
@@ -523,12 +554,12 @@ const UserDashboard = () => {
       {/* Lightbox Photo Preview Modal */}
       {selectedModalImage && (
         <div 
-          onClick={() => setSelectedModalImage(null)}
+          onClick={closeModalImage}
           className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 cursor-zoom-out"
         >
           <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
             <button
-              onClick={() => setSelectedModalImage(null)}
+              onClick={closeModalImage}
               className="absolute -top-12 right-0 bg-white/20 text-white hover:bg-white/40 p-2 rounded-full backdrop-blur transition-all"
             >
               <X size={24} />
